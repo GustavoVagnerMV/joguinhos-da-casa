@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#a18cd1">
+<title>Quebra-Cabeça Mágico</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+html,body{height:100%;overflow:hidden;touch-action:none;overscroll-behavior:none}
+body{font-family:'Fredoka','Trebuchet MS',sans-serif;background:linear-gradient(160deg,#a18cd1,#fbc2eb 60%,#fad0c4);color:#3b2a5a}
+.top{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;z-index:2000;pointer-events:none}
+.top>*{pointer-events:auto}
+.btn{border:none;background:#fff;border-radius:18px;font-size:28px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 5px 0 rgba(0,0,0,.15);cursor:pointer}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.top h1{font-size:clamp(18px,4.5vw,30px);color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.18);pointer-events:none}
+#stage{position:fixed;inset:0}
+#board{position:absolute;border-radius:18px;background:rgba(255,255,255,.45);box-shadow:0 0 0 6px rgba(255,255,255,.8),0 14px 30px rgba(0,0,0,.15);overflow:hidden}
+#ghost,#full{position:absolute;inset:0;background-size:100% 100%}
+#full{opacity:0;transition:opacity .6s;z-index:3}
+#board.done #full{opacity:1}
+.slot{position:absolute;border:2px dashed rgba(255,255,255,.95)}
+.piece{position:absolute;border-radius:12px;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7),0 6px 14px rgba(0,0,0,.25);touch-action:none;cursor:grab;transition:transform .15s,box-shadow .15s,border-radius .2s;animation:drop .5s backwards}
+.piece.drag{transform:scale(1.08) rotate(-2deg);box-shadow:inset 0 0 0 3px #fff,0 16px 28px rgba(0,0,0,.3)}
+.piece.placed{border-radius:0;box-shadow:none;cursor:default;animation:snap .3s}
+@keyframes drop{from{opacity:0;transform:scale(.3) rotate(20deg)}}
+@keyframes snap{50%{transform:scale(1.1)}}
+.spark{position:fixed;font-size:44px;pointer-events:none;z-index:2500;animation:spark .7s forwards}
+@keyframes spark{from{transform:translate(-50%,-50%) scale(.3);opacity:1}to{transform:translate(-50%,-90%) scale(1.6);opacity:0}}
+.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(60,30,90,.45);z-index:3000;padding:16px}
+.overlay.show{display:flex}
+.card{background:#fff;border-radius:34px;padding:26px 22px;text-align:center;max-width:520px;width:100%;box-shadow:0 12px 0 rgba(0,0,0,.12);animation:pop .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.5);opacity:0}}
+.card .big{font-size:80px;line-height:1}
+.card h2{font-size:clamp(26px,6vw,38px);color:#7c4dff;margin:8px 0}
+.card p{font-size:20px;margin-bottom:16px}
+.choices{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.choices button{border:none;border-radius:24px;background:var(--c);color:#fff;font-family:inherit;font-size:44px;padding:14px 10px;min-width:130px;flex:1;box-shadow:0 7px 0 rgba(0,0,0,.18);cursor:pointer;display:flex;flex-direction:column;align-items:center}
+.choices button b{font-size:21px;margin-top:4px}
+.choices button:active,.play:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+#winImg{width:min(60vw,260px);border-radius:22px;box-shadow:0 8px 0 rgba(0,0,0,.1)}
+.play{border:none;border-radius:24px;background:linear-gradient(135deg,#3bceac,#0ead69);color:#fff;font-family:inherit;font-size:28px;font-weight:700;padding:14px 34px;box-shadow:0 7px 0 rgba(0,0,0,.18);cursor:pointer;margin:6px}
+.play.alt{background:linear-gradient(135deg,#ffb703,#fb8500)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:4000}
+</style>
+</head>
+<body>
+<div class="top"><a class="btn" href="../index.html">🏠</a><h1>🧩 Quebra-Cabeça</h1><button class="btn" id="menuBtn">⚙️</button></div>
+<div id="stage"></div>
+
+<div id="menu" class="overlay show"><div class="card">
+  <div class="big">🧩</div><h2>Quebra-Cabeça Mágico</h2><p>Quantas peças você quer?</p>
+  <div class="choices">
+    <button data-d="facil" style="--c:linear-gradient(135deg,#3bceac,#0ead69)">😊<b>4 peças</b></button>
+    <button data-d="medio" style="--c:linear-gradient(135deg,#ffb703,#fb8500)">😃<b>6 peças</b></button>
+    <button data-d="dificil" style="--c:linear-gradient(135deg,#ff5d8f,#c9184a)">🤩<b>9 peças</b></button>
+  </div>
+</div></div>
+
+<div id="win" class="overlay"><div class="card">
+  <img id="winImg" alt="">
+  <h2>Parabéns! 🎉</h2>
+  <button class="play" id="next">Próximo ▶</button>
+  <button class="play alt" id="toMenu">⚙️</button>
+</div></div>
+
+<script>
+/* ---------- som, voz e confete ---------- */
+const AC=window.AudioContext||window.webkitAudioContext;let ac;
+function tone(f,d=.15,type='sine',vol=.25,delay=0){try{ac=ac||new AC();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
+const sfx={pick(){tone(500,.07,'triangle',.2)},pop(){tone(660,.08,'triangle',.3);tone(990,.12,'triangle',.22,.06)},win(){[523,659,784,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.25,i*.12))}};
+let voice;function pickVoice(){const v=speechSynthesis.getVoices();voice=v.find(x=>/pt[-_]BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))}
+if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.9;u.pitch=1.25;speechSynthesis.speak(u)}
+function confetti(n=140){const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);const W=c.width=innerWidth,H=c.height=innerHeight,x=c.getContext('2d'),cl=['#ff5d8f','#ffd23f','#3bceac','#5e60ce','#ff8c42','#4cc9f0'];const ps=Array.from({length:n},()=>({x:W/2,y:H*.45,vx:(Math.random()-.5)*18,vy:-Math.random()*15-4,s:Math.random()*8+7,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*cl.length|0]}));let f=0;(function L(){x.clearRect(0,0,W,H);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<160)requestAnimationFrame(L);else c.remove()})()}
+
+/* ---------- cenas desenhadas ---------- */
+const SCENES=[
+ {name:'o leão',e:'🦁',bg:['#ffe259','#ffa751'],deco:['☀️','🌿','🌼','🌻']},
+ {name:'o cachorrinho',e:'🐶',bg:['#a1ffce','#faffd1'],deco:['🦴','🌳','⚽','🌸']},
+ {name:'o unicórnio',e:'🦄',bg:['#fbc2eb','#a6c1ee'],deco:['🌈','⭐','✨','☁️']},
+ {name:'o foguete',e:'🚀',bg:['#4facfe','#5e3bb0'],deco:['⭐','🌙','🪐','✨']},
+ {name:'o peixinho',e:'🐠',bg:['#4facfe','#00f2fe'],deco:['🐚','🌊','🐙','💧']},
+ {name:'o dinossauro',e:'🦖',bg:['#d4fc79','#96e6a1'],deco:['🌴','🌋','🥚','🌿']},
+ {name:'o gatinho',e:'🐱',bg:['#ffecd2','#fcb69f'],deco:['🧶','🐟','🌷','🦋']},
+ {name:'o carro',e:'🚗',bg:['#89f7fe','#66a6ff'],deco:['🏁','☁️','🌳','🚦']},
+ {name:'o panda',e:'🐼',bg:['#c1f0c1','#7ed6a5'],deco:['🎋','🍃','🌸','☀️']},
+ {name:'o polvo',e:'🐙',bg:['#a18cd1','#6a82fb'],deco:['🐚','⭐','🐟','💧']},
+];
+function drawScene(s){const S=800,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');
+ const g=x.createLinearGradient(0,0,S,S);g.addColorStop(0,s.bg[0]);g.addColorStop(1,s.bg[1]);x.fillStyle=g;x.fillRect(0,0,S,S);
+ x.fillStyle='rgba(255,255,255,.25)';[[120,140,100],[690,210,120],[610,660,150],[150,620,80],[400,90,50]].forEach(([a,b,r])=>{x.beginPath();x.arc(a,b,r,0,7);x.fill()});
+ x.fillStyle='rgba(255,255,255,.4)';x.beginPath();x.ellipse(400,840,560,220,0,0,7);x.fill();
+ x.textAlign='center';x.textBaseline='middle';
+ const F=n=>`${n}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+ [[125,125,140],[675,135,130],[135,675,130],[670,670,140]].forEach((p,i)=>{x.font=F(p[2]);x.fillText(s.deco[i],p[0],p[1])});
+ x.font=F(420);x.fillText(s.e,400,440);
+ return c.toDataURL('image/png');}
+
+/* ---------- jogo ---------- */
+const DIFF={facil:[2,2,.4],medio:[3,2,.28],dificil:[3,3,.18]};
+let cols=2,rows=2,ghostOp=.4,sceneIdx=Math.random()*SCENES.length|0,pieces=[],img,B={},z=10,board,diff='facil';
+const stage=document.getElementById('stage');
+const $=id=>document.getElementById(id);
+
+document.querySelectorAll('.choices button').forEach(b=>b.onclick=()=>{diff=b.dataset.d;[cols,rows,ghostOp]=DIFF[diff];$('menu').classList.remove('show');sfx.pop();newPuzzle()});
+$('menuBtn').onclick=()=>{$('win').classList.remove('show');$('menu').classList.add('show')};
+$('toMenu').onclick=$('menuBtn').onclick;
+$('next').onclick=()=>{$('win').classList.remove('show');sceneIdx++;newPuzzle()};
+
+function newPuzzle(){
+ const s=SCENES[sceneIdx%SCENES.length];img=drawScene(s);stage.innerHTML='';pieces=[];
+ board=document.createElement('div');board.id='board';
+ board.innerHTML=`<div id="ghost" style="background-image:url(${img});opacity:${ghostOp}"></div><div id="full" style="background-image:url(${img})"></div>`;
+ stage.appendChild(board);
+ const order=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const sl=document.createElement('div');sl.className='slot';sl.dataset.r=r;sl.dataset.c=c;board.appendChild(sl);order.push({r,c})}
+ order.sort(()=>Math.random()-.5).forEach((p,i)=>{const el=document.createElement('div');el.className='piece';el.style.backgroundImage=`url(${img})`;el.style.animationDelay=(i*.07)+'s';stage.appendChild(el);const pc={...p,el,placed:false,x:0,y:0};pieces.push(pc);addDrag(pc)});
+ layout();
+ setTimeout(()=>speak(`Vamos montar ${s.name}!`),300);
+}
+function setPos(p,x,y){p.x=x;p.y=y;p.el.style.left=x+'px';p.el.style.top=y+'px'}
+function layout(){
+ if(!board)return;const W=innerWidth,H=innerHeight,top=82;let bs,bx,by,tray;
+ if(W>H*1.1){bs=Math.min(H-top-24,W*.52);bx=Math.max(20,W*.05);by=top+(H-top-bs)/2-8;tray={x:bx+bs+28,y:top,w:W-(bx+bs+28)-16,h:H-top-16}}
+ else{bs=Math.min(W-40,(H-top)*.56);bx=(W-bs)/2;by=top;tray={x:16,y:by+bs+22,w:W-32,h:H-(by+bs+22)-12}}
+ B={x:bx,y:by,s:bs,pw:bs/cols,ph:bs/rows};
+ Object.assign(board.style,{left:bx+'px',top:by+'px',width:bs+'px',height:bs+'px'});
+ board.querySelectorAll('.slot').forEach(sl=>Object.assign(sl.style,{left:sl.dataset.c*B.pw+'px',top:sl.dataset.r*B.ph+'px',width:B.pw+'px',height:B.ph+'px'}));
+ const loose=pieces.filter(p=>!p.placed),n=loose.length;
+ const k=Math.max(1,Math.ceil(Math.sqrt(n*tray.w/Math.max(tray.h,1)))),rr=Math.max(1,Math.ceil(n/k)),cw=tray.w/k,ch=tray.h/rr;
+ pieces.forEach(p=>{Object.assign(p.el.style,{width:B.pw+'px',height:B.ph+'px',backgroundSize:`${bs}px ${bs}px`,backgroundPosition:`${-p.c*B.pw}px ${-p.r*B.ph}px`});
+  if(p.placed)setPos(p,B.x+p.c*B.pw,B.y+p.r*B.ph)});
+ loose.forEach((p,i)=>{const cx=tray.x+(i%k)*cw+cw/2,cy=tray.y+Math.floor(i/k)*ch+ch/2;
+  let x=cx-B.pw/2+(Math.random()-.5)*Math.max(0,cw-B.pw)*.6,y=cy-B.ph/2+(Math.random()-.5)*Math.max(0,ch-B.ph)*.6;
+  x=Math.min(Math.max(6,x),W-B.pw-6);y=Math.min(Math.max(70,y),H-B.ph-6);setPos(p,x,y)});
+}
+function addDrag(p){const el=p.el;let ox,oy,drag=false;
+ el.addEventListener('pointerdown',e=>{if(p.placed)return;e.preventDefault();drag=true;el.setPointerCapture(e.pointerId);ox=e.clientX-p.x;oy=e.clientY-p.y;el.classList.add('drag');el.style.zIndex=++z;sfx.pick()});
+ el.addEventListener('pointermove',e=>{if(drag)setPos(p,e.clientX-ox,e.clientY-oy)});
+ const end=()=>{if(!drag)return;drag=false;el.classList.remove('drag');
+  const tx=B.x+p.c*B.pw,ty=B.y+p.r*B.ph;
+  if(Math.hypot(p.x-tx,p.y-ty)<Math.min(B.pw,B.ph)*.42){p.placed=true;el.classList.add('placed');el.style.zIndex=2;setPos(p,tx,ty);sfx.pop();spark(tx+B.pw/2,ty+B.ph/2);if(pieces.every(q=>q.placed))setTimeout(win,350)}
+  else setPos(p,Math.min(Math.max(0,p.x),innerWidth-B.pw),Math.min(Math.max(60,p.y),innerHeight-B.ph))};
+ el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end)}
+function spark(x,y){const s=document.createElement('div');s.className='spark';s.textContent=['✨','⭐','💖','🌟'][Math.random()*4|0];s.style.left=x+'px';s.style.top=y+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),700)}
+function win(){board.classList.add('done');sfx.win();confetti();const s=SCENES[sceneIdx%SCENES.length];speak(`Parabéns! Você montou ${s.name}!`);
+ $('winImg').src=img;setTimeout(()=>$('win').classList.add('show'),1300)}
+addEventListener('resize',()=>setTimeout(layout,100));
+</script>
+</body>
+</html>

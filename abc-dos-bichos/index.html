@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#fb8500">
+<title>ABC dos Bichos</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+html,body{height:100%;overflow:hidden;touch-action:manipulation;overscroll-behavior:none}
+body{font-family:'Fredoka','Trebuchet MS',sans-serif;background:linear-gradient(165deg,#ffe066,#ffbe0b 45%,#fb8500);color:#4a2c00}
+.top{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;z-index:10;gap:8px}
+.btn{border:none;background:#fff;border-radius:18px;font-size:28px;width:56px;height:56px;flex:none;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 5px 0 rgba(0,0,0,.15);cursor:pointer}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.15)}
+#stars{display:flex;gap:2px;font-size:clamp(16px,4vw,28px);background:rgba(255,255,255,.3);padding:6px 10px;border-radius:20px}
+#stars span{filter:grayscale(1);opacity:.35;transition:.4s}
+#stars span.on{filter:none;opacity:1;animation:pop .5s}
+main{position:fixed;inset:0;padding:80px 16px 20px;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;gap:12px}
+.q{color:#fff;font-size:clamp(22px,5vw,38px);font-weight:700;text-shadow:0 4px 0 rgba(0,0,0,.18);text-align:center}
+#card{background:#fff;border-radius:36px;padding:20px 24px 26px;box-shadow:0 12px 0 rgba(0,0,0,.12);display:flex;flex-direction:column;align-items:center;width:min(92vw,560px);position:relative;cursor:pointer}
+#emoji{font-size:min(34vw,24vh,190px);line-height:1.1;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-4deg)}}
+#word{display:flex;gap:6px;margin-top:10px;flex-wrap:nowrap}
+.l{width:var(--s);height:calc(var(--s)*1.2);border-radius:14px;background:#fff3d6;color:#7a4a00;font-size:calc(var(--s)*.75);font-weight:700;display:flex;align-items:center;justify-content:center}
+.l.first{background:#fff;border:4px dashed #fb8500;color:#fb8500}
+.l.first.done{border:4px solid #0ead69;background:#0ead69;color:#fff;animation:pop .5s}
+#card .spk{position:absolute;top:12px;right:14px;font-size:30px}
+#opts{display:flex;gap:clamp(12px,4vw,28px)}
+.opt{border:none;width:min(25vw,120px,15vh);aspect-ratio:1;border-radius:28px;font-family:inherit;font-weight:700;font-size:min(14vw,66px,9vh);color:#fff;background:var(--c);box-shadow:0 8px 0 rgba(0,0,0,.2);cursor:pointer;transition:transform .15s,opacity .3s}
+.opt:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.opt.ok{background:#0ead69;animation:pop .5s}
+.opt.no{opacity:.3;animation:shake .4s;pointer-events:none}
+@keyframes pop{50%{transform:scale(1.3)}}
+@keyframes shake{25%{transform:translateX(-10px) rotate(-6deg)}75%{transform:translateX(10px) rotate(6deg)}}
+.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(90,50,0,.4);z-index:50;padding:16px}
+.overlay.show{display:flex}
+.box{background:#fff;border-radius:34px;padding:28px 22px;text-align:center;max-width:480px;width:100%;box-shadow:0 12px 0 rgba(0,0,0,.12);animation:pop2 .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop2{from{transform:scale(.5);opacity:0}}
+.box .big{font-size:90px;line-height:1;animation:bob 2s ease-in-out infinite}
+.box h2{font-size:clamp(28px,6vw,40px);color:#fb8500;margin:10px 0}
+.box p{font-size:20px;margin-bottom:18px}
+.play{border:none;border-radius:24px;background:linear-gradient(135deg,#3bceac,#0ead69);color:#fff;font-family:inherit;font-size:30px;font-weight:700;padding:14px 40px;box-shadow:0 7px 0 rgba(0,0,0,.18);cursor:pointer}
+.play:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:100}
+</style>
+</head>
+<body>
+<div class="top"><a class="btn" href="../index.html">🏠</a><div id="stars"></div><button class="btn" id="say">🔊</button></div>
+<main>
+  <div class="q">Qual letra começa?</div>
+  <div id="card"><span class="spk">🔈</span><div id="emoji"></div><div id="word"></div></div>
+  <div id="opts"></div>
+</main>
+<div id="start" class="overlay show"><div class="box"><div class="big">🔤</div><h2>ABC dos Bichos</h2><p>Descubra a primeira letra!</p><button class="play" id="go">▶ Jogar</button></div></div>
+<div id="end" class="overlay"><div class="box"><div class="big">🏆</div><h2>Você arrasou!</h2><p>⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐</p><button class="play" id="again">🔄 De novo</button></div></div>
+
+<script>
+const AC=window.AudioContext||window.webkitAudioContext;let ac;
+function tone(f,d=.15,type='sine',vol=.25,delay=0){try{ac=ac||new AC();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
+const sfx={good(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.25,i*.09))},bad(){tone(260,.18,'sine',.25);tone(200,.25,'sine',.25,.14)},win(){[523,659,784,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.25,i*.12))}};
+let voice;function pickVoice(){const v=speechSynthesis.getVoices();voice=v.find(x=>/pt[-_]BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))}
+if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.85;u.pitch=1.25;speechSynthesis.speak(u)}
+function confetti(n=120){const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);const W=c.width=innerWidth,H=c.height=innerHeight,x=c.getContext('2d'),cl=['#ff5d8f','#ffd23f','#3bceac','#5e60ce','#ff8c42','#4cc9f0'];const ps=Array.from({length:n},()=>({x:W/2,y:H*.45,vx:(Math.random()-.5)*18,vy:-Math.random()*15-4,s:Math.random()*8+7,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*cl.length|0]}));let f=0;(function L(){x.clearRect(0,0,W,H);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<160)requestAnimationFrame(L);else c.remove()})()}
+
+const WORDS=[
+ ['ABELHA','🐝'],['BOLA','⚽'],['CASA','🏠'],['DADO','🎲'],['ELEFANTE','🐘'],['FOCA','🦭'],['GATO','🐱'],
+ ['HIPOPÓTAMO','🦛'],['ILHA','🏝️'],['JACARÉ','🐊'],['KIWI','🥝'],['LEÃO','🦁'],['MAÇÃ','🍎'],['NAVIO','🚢'],
+ ['OVO','🥚'],['PATO','🦆'],['QUEIJO','🧀'],['RATO','🐭'],['SAPO','🐸'],['TOMATE','🍅'],['UVA','🍇'],
+ ['VACA','🐮'],['XÍCARA','☕'],['ZEBRA','🦓'],['AVIÃO','✈️'],['BANANA','🍌'],['CAVALO','🐴'],['MACACO','🐵'],
+ ['PEIXE','🐟'],['TARTARUGA','🐢'],['BORBOLETA','🦋'],['ESTRELA','⭐'],['FLOR','🌸'],['LUA','🌙'],['SOL','☀️'],
+ ['URSO','🐻'],['COELHO','🐰'],['PORCO','🐷'],['NUVEM','☁️'],['DINOSSAURO','🦖'],['GIRAFA','🦒'],['RAPOSA','🦊']
+];
+const ABC='ABCDEFGHIJLMNOPRSTUVZ';
+const COLORS=['linear-gradient(135deg,#ff5d8f,#c9184a)','linear-gradient(135deg,#3a86ff,#5e60ce)','linear-gradient(135deg,#8338ec,#b5179e)'];
+const ROUNDS=10;let round=0,deck=[],cur,lock=false;
+const $=id=>document.getElementById(id);
+$('stars').innerHTML='<span>⭐</span>'.repeat(ROUNDS);
+$('go').onclick=()=>{$('start').classList.remove('show');startGame()};
+$('again').onclick=()=>{$('end').classList.remove('show');startGame()};
+const ask=()=>speak(`Com que letra começa ${cur[0].toLowerCase()}?`);
+$('say').onclick=ask;$('card').onclick=()=>speak(cur[0].toLowerCase());
+const cap=w=>w[0]+w.slice(1).toLowerCase();
+
+function startGame(){round=0;deck=[...WORDS].sort(()=>Math.random()-.5);document.querySelectorAll('#stars span').forEach(s=>s.classList.remove('on'));next()}
+function next(){
+ if(round>=ROUNDS){sfx.win();confetti(200);speak('Parabéns! Você conhece muitas letras!');$('end').classList.add('show');return}
+ lock=false;cur=deck[round];const [w,e]=cur;
+ $('emoji').textContent=e;$('emoji').style.animation='none';$('emoji').offsetWidth;$('emoji').style.animation='';
+ const s=Math.min(64,(Math.min(innerWidth*.92,560)-48-(w.length-1)*6)/w.length);
+ const wd=$('word');wd.style.setProperty('--s',s+'px');
+ wd.innerHTML=[...w].map((c,i)=>`<div class="l${i?'':' first'}">${i?c:'?'}</div>`).join('');
+ const opts=new Set([w[0]]);while(opts.size<3)opts.add(ABC[Math.random()*ABC.length|0]);
+ const o=$('opts');o.innerHTML='';
+ [...opts].sort(()=>Math.random()-.5).forEach((L,i)=>{const b=document.createElement('button');b.className='opt';b.textContent=L;b.style.setProperty('--c',COLORS[i]);b.onclick=()=>answer(b,L);o.appendChild(b)});
+ setTimeout(ask,350);
+}
+function answer(b,L){if(lock)return;const w=cur[0];
+ if(L===w[0]){lock=true;b.classList.add('ok');const f=document.querySelector('.l.first');f.textContent=L;f.classList.add('done');sfx.good();confetti(80);
+  document.querySelectorAll('#stars span')[round].classList.add('on');
+  speak(`${L}, de ${cap(w)}! Muito bem!`);round++;setTimeout(next,2400)}
+ else{b.classList.add('no');sfx.bad();speak(`Não é ${L}. Tente outra!`)}
+}
+</script>
+</body>
+</html>

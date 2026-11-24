@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#3a2a5e">
+<title>Teatro das Sombras</title>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+:root{--ol:#2d1b4e}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+html,body{height:100%;overflow:hidden;touch-action:none;overscroll-behavior:none}
+body{font-family:'Lilita One','Comic Sans MS','Chalkboard SE',cursive;color:var(--ol);letter-spacing:.5px;background:radial-gradient(circle at 50% 0,#5a3f8c,#2a1b48)}
+.top{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;z-index:20;gap:8px}
+.btn{border:5px solid var(--ol);background:#fff;border-radius:18px;font-size:26px;width:58px;height:58px;flex:none;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 5px 0 #120a24;cursor:pointer}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #120a24}
+#stars{display:flex;gap:1px;font-size:clamp(16px,4vw,28px);background:#fff;border:5px solid var(--ol);box-shadow:0 5px 0 #120a24;padding:4px 10px;border-radius:20px}
+#stars span{filter:grayscale(1);opacity:.3;transition:.4s}
+#stars span.on{filter:none;opacity:1;animation:boing .5s}
+main{position:fixed;inset:0;padding:80px 10px 12px;display:flex;flex-direction:column;gap:14px}
+#stage{flex:1;min-height:0;position:relative;border:7px solid var(--ol);border-radius:30px;box-shadow:0 9px 0 #120a24;overflow:hidden;
+ background:radial-gradient(circle at var(--x,50%) var(--y,45%),#fffdf0 0,#ffeeb5 22%,#f0c56e 60%,#c9923f 100%)}
+.curtain{position:absolute;top:0;bottom:0;width:10%;background:repeating-linear-gradient(90deg,#e63946 0 14px,#b5121f 14px 28px);z-index:3}
+.curtain.l{left:0;border-right:6px solid var(--ol);border-radius:0 0 50px 0}
+.curtain.r{right:0;border-left:6px solid var(--ol);border-radius:0 0 0 50px}
+.valance{position:absolute;top:0;left:0;right:0;height:38px;z-index:4;background:radial-gradient(circle at 22px -4px,#e63946 24px,var(--ol) 25px 29px,transparent 30px) 0 0/44px 38px repeat-x}
+#shadows{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:6px 20px;padding:44px 12% 12px;width:100%;height:100%}
+.sh{position:relative;display:flex;align-items:center;justify-content:center;border-radius:26px;transition:background .2s,transform .2s;padding:6px}
+.sh .e{display:block;line-height:1.05;filter:brightness(0);opacity:.75;transition:filter .5s,opacity .5s}
+.sh.mir .e{transform:scaleX(-1)}
+.sh.over{background:rgba(255,255,255,.55);transform:scale(1.06)}
+.sh.found .e{filter:drop-shadow(0 5px 0 rgba(45,27,78,.35));opacity:1;animation:boing .55s}
+.sh.no{animation:shake .45s}
+#shelf{position:relative;z-index:5;background:#b5713f;border:7px solid var(--ol);border-radius:26px;box-shadow:0 9px 0 #120a24,inset 0 -12px 0 rgba(0,0,0,.18);display:flex;justify-content:center;gap:clamp(8px,3vw,24px);padding:12px 10px 20px}
+.item{line-height:1.05;touch-action:none;cursor:grab;position:relative;filter:drop-shadow(0 5px 0 rgba(45,27,78,.55));transition:transform .45s cubic-bezier(.3,1.6,.5,1);animation:boing .5s backwards}
+.item.drag{z-index:50;transition:none}
+.item.gone{visibility:hidden}
+.spark{position:fixed;font-size:40px;pointer-events:none;z-index:60;animation:spark .8s forwards}
+@keyframes spark{from{transform:translate(-50%,-50%) scale(.3);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(1.4);opacity:0}}
+@keyframes boing{0%{transform:scale(.4)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes shake{20%{transform:translateX(-12px) rotate(-5deg)}40%{transform:translateX(10px) rotate(5deg)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+@keyframes dance{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-20px) rotate(8deg)}}
+.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(20,10,40,.55);z-index:80;padding:16px}
+.overlay.show{display:flex}
+.box{background:#fff;border:7px solid var(--ol);border-radius:36px;padding:26px 22px;text-align:center;max-width:480px;width:100%;box-shadow:0 12px 0 #120a24;animation:boing .5s}
+.box .big{font-size:92px;line-height:1;animation:dance 1.2s ease-in-out infinite}
+.box h2{font-size:clamp(30px,7vw,44px);color:#e63946;margin:12px 0;text-shadow:3px 3px 0 var(--ol)}
+.box p{font-size:22px;margin-bottom:18px}
+.play{border:6px solid var(--ol);border-radius:24px;background:#8ac926;color:#fff;font-family:inherit;font-size:32px;padding:10px 36px;box-shadow:0 7px 0 var(--ol);cursor:pointer;text-shadow:2px 2px 0 var(--ol)}
+.play:active{transform:translateY(5px);box-shadow:0 2px 0 var(--ol)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:90}
+</style>
+</head>
+<body>
+<div class="top"><a class="btn" href="../index.html">🏠</a><div id="stars"></div><button class="btn" id="say">🔊</button></div>
+<main>
+  <div id="stage"><div class="valance"></div><div class="curtain l"></div><div class="curtain r"></div><div id="shadows"></div></div>
+  <div id="shelf"></div>
+</main>
+<div id="start" class="overlay show"><div class="box"><div class="big">🎭</div><h2>Teatro das Sombras</h2><p>Arraste cada figura até a sua sombra!</p><button class="play" id="go">▶ JOGAR</button></div></div>
+<div id="end" class="overlay"><div class="box"><div class="big">🏆</div><h2>Bravo! Bravo!</h2><p>👏 O teatro aplaude você! 👏</p><button class="play" id="again">🔄 DE NOVO</button></div></div>
+
+<script>
+const AC=window.AudioContext||window.webkitAudioContext;let ac;
+function tone(f,d=.15,type='sine',vol=.25,delay=0,f2){try{ac=ac||new AC();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
+let voice;function pickVoice(){const v=speechSynthesis.getVoices();voice=v.find(x=>/pt[-_]BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))}
+if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.95;u.pitch=1.4;speechSynthesis.speak(u)}
+function confetti(n=160){const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);const W=c.width=innerWidth,H=c.height=innerHeight,x=c.getContext('2d'),cl=['#ff5d8f','#ffd23f','#3bceac','#5e60ce','#ff8c42','#4cc9f0'];const ps=Array.from({length:n},()=>({x:W/2,y:H*.4,vx:(Math.random()-.5)*18,vy:-Math.random()*15-4,s:Math.random()*9+8,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*cl.length|0]}));let f=0;(function L(){x.clearRect(0,0,W,H);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.strokeStyle='#2d1b4e';x.lineWidth=2;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.strokeRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<170)requestAnimationFrame(L);else c.remove()})()}
+const $=id=>document.getElementById(id);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.random()*a.length|0];
+
+const ITEMS=[['🐘','o elefante'],['🦒','a girafa'],['🐌','o caracol'],['🦀','o caranguejo'],['🐢','a tartaruga'],['🦋','a borboleta'],
+ ['✈️','o avião'],['🚲','a bicicleta'],['🎸','o violão'],['☂️','o guarda-chuva'],['🍐','a pera'],['🍌','a banana'],['🦕','o dinossauro'],
+ ['🐇','o coelho'],['🐓','o galo'],['🦈','o tubarão'],['🐙','o polvo'],['🌵','o cacto'],['🚀','o foguete'],['⚓','a âncora'],['🔑','a chave'],
+ ['🍄','o cogumelo'],['🏰','o castelo'],['🐿️','o esquilo'],['🦩','o flamingo'],['🚁','o helicóptero'],['🐳','a baleia'],['🦔','o porco-espinho']];
+const ROUNDS=8;let round=0,deck,cur,found,busy=false;
+const stage=$('stage');
+$('stars').innerHTML='<span>⭐</span>'.repeat(ROUNDS);
+$('go').onclick=()=>{$('start').classList.remove('show');startGame()};
+$('again').onclick=()=>{$('end').classList.remove('show');startGame()};
+$('say').onclick=()=>speak('Arraste cada figura até a sua sombra!');
+/* lanterna que segue o dedo */
+addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();stage.style.setProperty('--x',(e.clientX-r.left)+'px');stage.style.setProperty('--y',(e.clientY-r.top)+'px')});
+
+function startGame(){round=0;deck=shuffle([...ITEMS]);document.querySelectorAll('#stars span').forEach(s=>s.classList.remove('on'));next()}
+function next(){
+ if(round>=ROUNDS){confetti(220);[523,659,784,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.25,i*.12));speak('Bravo! Você achou todas as sombras!');$('end').classList.add('show');return}
+ busy=false;found=0;const k=round<3?3:4,mir=round>=6;
+ if(deck.length<k)deck=shuffle([...ITEMS]);cur=deck.splice(0,k);
+ const W=innerWidth,H=innerHeight;
+ const itemFs=Math.min((W-60)/k*.62,H*.11,96);
+ const shelf=$('shelf');shelf.innerHTML='';
+ shuffle([...cur]).forEach((it,i)=>{const el=document.createElement('div');el.className='item';el.textContent=it[0];el.style.fontSize=itemFs+'px';el.style.animationDelay=(.3+i*.1)+'s';shelf.appendChild(el);bind(el,it)});
+ const sh=$('shadows');sh.innerHTML='';
+ const sw=stage.clientWidth*.76,shh=stage.clientHeight-60,cols=(k===4&&sw<shh*1.3)?2:k,rows=Math.ceil(k/cols);
+ const fs=Math.min(sw/cols,shh/rows)*.62,cap=Math.min(fs,170);
+ shuffle([...cur]).forEach(it=>{const d=document.createElement('div');d.className='sh'+(mir?' mir':'');d.dataset.e=it[0];d.innerHTML=`<span class="e" style="font-size:${cap}px">${it[0]}</span>`;sh.appendChild(d)});
+ setTimeout(()=>speak(round===0?'Arraste cada figura até a sua sombra!':mir?'Cuidado! As sombras estão viradas!':'Onde está a sombra?'),350);
+}
+function shadowAt(x,y){return[...document.querySelectorAll('.sh:not(.found)')].find(s=>{const r=s.getBoundingClientRect(),m=20;return x>r.left-m&&x<r.right+m&&y>r.top-m&&y<r.bottom+m})}
+function bind(el,it){let sx,sy,c0,drag=false,over;
+ el.addEventListener('pointerdown',e=>{if(busy||el.classList.contains('gone'))return;e.preventDefault();drag=true;el.setPointerCapture(e.pointerId);sx=e.clientX;sy=e.clientY;const r=el.getBoundingClientRect();c0={x:r.left+r.width/2,y:r.top+r.height/2};el.classList.add('drag');tone(500,.1,'triangle',.2,0,800)});
+ el.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-sx,dy=e.clientY-sy;el.style.transform=`translate(${dx}px,${dy}px) scale(1.25)`;
+  const s=shadowAt(c0.x+dx,c0.y+dy);if(s!==over){over&&over.classList.remove('over');over=s;s&&s.classList.add('over')}});
+ const end=e=>{if(!drag)return;drag=false;el.classList.remove('drag');over&&over.classList.remove('over');over=null;
+  const s=e.type==='pointerup'?shadowAt(c0.x+e.clientX-sx,c0.y+e.clientY-sy):null;
+  if(s&&s.dataset.e===it[0]){el.classList.add('gone');el.style.transform='';s.classList.add('found');const r=s.getBoundingClientRect();sparks(r.left+r.width/2,r.top+r.height/2);
+   [660,880,1100].forEach((f,i)=>tone(f,.14,'triangle',.25,i*.08));speak(`Isso! É ${it[1]}!`);found++;
+   if(found===cur.length){busy=true;setTimeout(()=>{confetti();document.querySelectorAll('#stars span')[round].classList.add('on');round++;setTimeout(next,1600)},700)}}
+  else{el.style.transform='';if(s){s.classList.remove('no');void s.offsetWidth;s.classList.add('no');tone(300,.35,'sawtooth',.1,0,140);speak('Hmm, essa sombra não é dele. Tente outra!')}}};
+ el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+}
+function sparks(x,y){for(let i=0;i<6;i++){const s=document.createElement('div');s.className='spark';s.textContent=pick(['✨','⭐','🌟','💫']);s.style.left=x+'px';s.style.top=y+'px';const a=i/6*Math.PI*2;s.style.setProperty('--dx',`calc(-50% + ${Math.cos(a)*110}px)`);s.style.setProperty('--dy',`calc(-50% + ${Math.sin(a)*110}px)`);document.body.appendChild(s);setTimeout(()=>s.remove(),800)}}
+</script>
+</body>
+</html>

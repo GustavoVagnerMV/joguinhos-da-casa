@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#47b8e8">
+<title>Caminho do Sapinho</title>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+:root{--ol:#2d1b4e}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+html,body{height:100%;overflow:hidden;touch-action:manipulation;overscroll-behavior:none}
+body{font-family:'Lilita One','Comic Sans MS','Chalkboard SE',cursive;color:var(--ol);letter-spacing:.5px;
+ background:radial-gradient(circle at 15% 25%,rgba(255,255,255,.2) 0 50px,transparent 52px),radial-gradient(circle at 85% 80%,rgba(255,255,255,.15) 0 80px,transparent 82px),radial-gradient(circle at 70% 15%,rgba(255,255,255,.15) 0 30px,transparent 32px),#47b8e8}
+.deco{position:fixed;font-size:44px;opacity:.9;animation:float 5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px) rotate(8deg)}}
+.top{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;z-index:20;gap:8px}
+.top .r{display:flex;gap:8px}
+.btn{border:5px solid var(--ol);background:#fff;border-radius:18px;font-size:26px;width:58px;height:58px;flex:none;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 5px 0 var(--ol);cursor:pointer}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ol)}
+#stars{display:flex;gap:1px;font-size:clamp(14px,3.6vw,26px);background:#fff;border:5px solid var(--ol);box-shadow:0 5px 0 var(--ol);padding:4px 8px;border-radius:20px}
+#stars span{filter:grayscale(1);opacity:.3;transition:.4s}
+#stars span.on{filter:none;opacity:1;animation:boing .5s}
+main{position:fixed;inset:0;padding:84px 10px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.title{font-size:clamp(24px,5vw,38px);color:#fff;text-shadow:3px 3px 0 var(--ol),-2px -2px 0 var(--ol),2px -2px 0 var(--ol),-2px 2px 0 var(--ol),0 6px 0 var(--ol)}
+.tip{font-size:clamp(16px,3.6vw,22px);color:#fff;text-shadow:2px 2px 0 var(--ol),-2px -2px 0 var(--ol),2px -2px 0 var(--ol),-2px 2px 0 var(--ol)}
+#board{position:relative;animation:boing .5s}
+.island{position:absolute;background:#ffe3a3;border:6px solid var(--ol);border-radius:26px;box-shadow:0 9px 0 var(--ol)}
+.tile{position:absolute;padding:5px;cursor:pointer}
+.tile .t{width:100%;height:100%;border-radius:14px;background:#a8e06a;border:4px solid var(--ol);overflow:hidden;transition:background .3s}
+.tile svg{width:100%;height:100%;display:block;transition:transform .28s cubic-bezier(.3,1.5,.5,1)}
+.tile:active .t{transform:scale(.94)}
+.rb{fill:none;stroke:var(--ol);stroke-width:40}
+.rd{fill:none;stroke:#d9a066;stroke-width:26;transition:stroke .3s}
+.st{fill:#b98049;transition:fill .3s}
+.lit .t{background:#d9f9a8}
+.lit .rd{stroke:#ffd23f}
+.lit .st{fill:#ff9f43}
+.hint .t{animation:pulse .5s 4}
+@keyframes pulse{50%{transform:scale(.85);background:#fff}}
+.pad{position:absolute;display:flex;align-items:center;justify-content:center}
+.pad::before{content:'';position:absolute;inset:8%;border-radius:50%;background:#4caf50;border:5px solid var(--ol);box-shadow:0 5px 0 var(--ol)}
+.pad span{position:relative;line-height:1}
+#frog{position:absolute;display:flex;align-items:center;justify-content:center;z-index:5;transition:left .26s ease-in-out,top .26s ease-in-out;pointer-events:none}
+#frog span{display:block;line-height:1;filter:drop-shadow(0 4px 0 rgba(45,27,78,.4))}
+#frog.hop span{animation:hop .26s}
+#frog.idle span{animation:idle 1.6s ease-in-out infinite}
+@keyframes hop{50%{transform:translateY(-45%) scale(1.2)}}
+@keyframes idle{50%{transform:translateY(-8%) scale(1.05,.95)}}
+@keyframes boing{0%{transform:scale(.4)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes dance{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-20px) rotate(8deg)}}
+.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(45,27,78,.45);z-index:80;padding:16px}
+.overlay.show{display:flex}
+.box{background:#fff;border:7px solid var(--ol);border-radius:36px;padding:26px 22px;text-align:center;max-width:480px;width:100%;box-shadow:0 12px 0 var(--ol);animation:boing .5s}
+.box .big{font-size:92px;line-height:1;animation:dance 1.2s ease-in-out infinite}
+.box h2{font-size:clamp(30px,7vw,44px);color:#4caf50;margin:12px 0;text-shadow:3px 3px 0 var(--ol)}
+.box p{font-size:22px;margin-bottom:18px}
+.play{border:6px solid var(--ol);border-radius:24px;background:#8ac926;color:#fff;font-family:inherit;font-size:32px;padding:10px 36px;box-shadow:0 7px 0 var(--ol);cursor:pointer;text-shadow:2px 2px 0 var(--ol)}
+.play:active{transform:translateY(5px);box-shadow:0 2px 0 var(--ol)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:90}
+</style>
+</head>
+<body>
+<div class="deco" style="left:4%;bottom:6%">🪷</div><div class="deco" style="right:5%;bottom:12%;animation-delay:-2s">🐟</div><div class="deco" style="left:6%;top:16%;animation-delay:-1s">🦆</div>
+<div class="top"><a class="btn" href="../index.html">🏠</a><div id="stars"></div><div class="r"><button class="btn" id="hintBtn">💡</button><button class="btn" id="say">🔊</button></div></div>
+<main>
+  <div class="title" id="lvl">Fase 1</div>
+  <div id="board"></div>
+  <div class="tip">👆 Toque nas pedras para girar!</div>
+</main>
+<div id="start" class="overlay show"><div class="box"><div class="big">🐸</div><h2>Caminho do Sapinho</h2><p>Gire as pedras e faça um caminho para o sapinho chegar em casa!</p><button class="play" id="go">▶ JOGAR</button></div></div>
+<div id="end" class="overlay"><div class="box"><div class="big">🏆</div><h2>Mestre dos Caminhos!</h2><p>O sapinho agradece! 💚</p><button class="play" id="again">🔄 DE NOVO</button></div></div>
+
+<script>
+const AC=window.AudioContext||window.webkitAudioContext;let ac;
+function tone(f,d=.15,type='sine',vol=.25,delay=0,f2){try{ac=ac||new AC();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
+let voice;function pickVoice(){const v=speechSynthesis.getVoices();voice=v.find(x=>/pt[-_]BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))}
+if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.95;u.pitch=1.4;speechSynthesis.speak(u)}
+function confetti(n=160){const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);const W=c.width=innerWidth,H=c.height=innerHeight,x=c.getContext('2d'),cl=['#ff5d8f','#ffd23f','#3bceac','#5e60ce','#ff8c42','#4cc9f0'];const ps=Array.from({length:n},()=>({x:W/2,y:H*.4,vx:(Math.random()-.5)*18,vy:-Math.random()*15-4,s:Math.random()*9+8,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*cl.length|0]}));let f=0;(function L(){x.clearRect(0,0,W,H);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.strokeStyle='#2d1b4e';x.lineWidth=2;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.strokeRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<170)requestAnimationFrame(L);else c.remove()})()}
+const $=id=>document.getElementById(id);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* ---------- lógica do caminho ---------- */
+const D=[[-1,0],[0,1],[1,0],[0,-1]]; // N L S O
+const LEVELS=[3,3,3,4,4,4,5,5];
+const SVG_S='<path class="rb" d="M50 -6V106"/><path class="rd" d="M50 -6V106"/><circle class="st" cx="50" cy="26" r="5"/><circle class="st" cx="50" cy="74" r="5"/>';
+const SVG_C='<path class="rb" d="M50 -6V0A50 50 0 0 0 100 50H106"/><path class="rd" d="M50 -6V0A50 50 0 0 0 100 50H106"/><circle class="st" cx="64.6" cy="35.4" r="5"/>';
+let lvl=0,n,S,grid,path,r0,r1,lock=true;
+const board=$('board');
+$('stars').innerHTML='<span>⭐</span>'.repeat(LEVELS.length);
+$('go').onclick=()=>{$('start').classList.remove('show');lvl=0;build()};
+$('again').onclick=()=>{$('end').classList.remove('show');document.querySelectorAll('#stars span').forEach(s=>s.classList.remove('on'));lvl=0;build()};
+$('say').onclick=()=>speak('Toque nas pedras para girar e faça um caminho até a casinha!');
+$('hintBtn').onclick=hint;
+
+function genPath(n){
+ for(let t=0;t<300;t++){
+  const start=Math.random()*n|0,vis=Array.from({length:n},()=>Array(n).fill(false)),p=[],minLen=n+Math.floor(n/2);
+  const dfs=(r,c)=>{vis[r][c]=true;p.push([r,c]);if(c===n-1&&p.length>=minLen)return true;
+   for(const d of shuffle([0,1,2,3,1])){const nr=r+D[d][0],nc=c+D[d][1];if(nr<0||nr>=n||nc<0||nc>=n||vis[nr][nc])continue;if(dfs(nr,nc))return true}
+   p.pop();return false};
+  if(dfs(start,0))return p}
+ return Array.from({length:n},(_,c)=>[0,c]);
+}
+const dirTo=(a,b)=>D.findIndex(d=>a[0]+d[0]===b[0]&&a[1]+d[1]===b[1]);
+const ops=t=>{const r=((t.rot%4)+4)%4;return t.type==='s'?[r,(r+2)%4]:[r,(r+1)%4]};
+function correct(t){return t.type==='s'?(t.rot%2)===(t.sol%2):(t.rot%4)===t.sol}
+
+function build(){
+ lock=false;n=LEVELS[lvl];path=genPath(n);r0=path[0][0];r1=path[path.length-1][0];
+ grid=Array.from({length:n},(_,r)=>Array.from({length:n},(_,c)=>({r,c,type:Math.random()<.5?'s':'c',rot:Math.random()*4|0,on:false})));
+ path.forEach((p,i)=>{const inD=i===0?3:dirTo(p,path[i-1]),outD=i===path.length-1?1:dirTo(p,path[i+1]);const t=grid[p[0]][p[1]];t.on=true;
+  if((inD+2)%4===outD){t.type='s';t.sol=inD%2===0?0:1;t.rot=t.sol+1}
+  else{t.type='c';t.sol=((outD-inD+4)%4===1)?inD:outD;t.rot=t.sol+1+(Math.random()*3|0)}});
+ if(trace().ok)grid[path[0][0]][path[0][1]].rot++;
+ $('lvl').textContent='Fase '+(lvl+1);
+ render();
+ setTimeout(()=>speak(lvl===0?'Gire as pedras e faça um caminho para o sapinho chegar em casa!':'Fase '+(lvl+1)+'!'),300);
+}
+function trace(){let r=r0,c=0,enter=3;const seq=[],seen=new Set();
+ while(true){const t=grid[r][c],o=ops(t);if(!o.includes(enter)||seen.has(r*n+c))break;seen.add(r*n+c);seq.push(t);
+  const out=o[0]===enter?o[1]:o[0],nr=r+D[out][0],nc=c+D[out][1];
+  if(out===1&&nc===n&&r===r1)return{ok:true,seq};
+  if(nr<0||nr>=n||nc<0||nc>=n)break;r=nr;c=nc;enter=(out+2)%4}
+ return{ok:false,seq}}
+function render(){
+ const W=innerWidth,H=innerHeight;S=Math.floor(Math.min((W-20)/(n+2),(H-230)/n,120));
+ board.innerHTML='';board.style.width=(n+2)*S+'px';board.style.height=n*S+'px';
+ board.style.animation='none';void board.offsetWidth;board.style.animation='';
+ const isl=document.createElement('div');isl.className='island';Object.assign(isl.style,{left:S-8+'px',top:'-8px',width:n*S+16+'px',height:n*S+16+'px'});board.appendChild(isl);
+ grid.flat().forEach(t=>{const el=document.createElement('div');el.className='tile';Object.assign(el.style,{left:(t.c+1)*S+'px',top:t.r*S+'px',width:S+'px',height:S+'px'});
+  el.innerHTML=`<div class="t"><svg viewBox="0 0 100 100" style="transform:rotate(${t.rot*90}deg)">${t.type==='s'?SVG_S:SVG_C}</svg></div>`;
+  el.onclick=()=>turn(t);t.el=el;board.appendChild(el)});
+ const pad=(c,r,e)=>{const p=document.createElement('div');p.className='pad';Object.assign(p.style,{left:c*S+'px',top:r*S+'px',width:S+'px',height:S+'px',fontSize:S*.55+'px'});p.innerHTML=`<span>${e}</span>`;board.appendChild(p);return p};
+ pad(0,r0,'');pad(n+1,r1,'🏡');
+ const f=document.createElement('div');f.id='frog';f.className='idle';Object.assign(f.style,{left:'0px',top:r0*S+'px',width:S+'px',height:S+'px',fontSize:S*.62+'px'});f.innerHTML='<span>🐸</span>';board.appendChild(f);
+ updateLit();
+}
+function updateLit(){const {ok,seq}=trace();grid.flat().forEach(t=>t.el.classList.toggle('lit',seq.includes(t)));return{ok,seq}}
+function turn(t){if(lock)return;t.rot++;t.el.querySelector('svg').style.transform=`rotate(${t.rot*90}deg)`;tone(300+Math.random()*80,.08,'square',.12);
+ const {ok,seq}=updateLit();if(seq.length)tone(500+seq.length*50,.1,'triangle',.15,.05);
+ if(ok){lock=true;setTimeout(()=>hopFrog(seq),350)}}
+function hint(){if(lock)return;const t=path.map(p=>grid[p[0]][p[1]]).find(t=>!correct(t));if(!t)return;t.el.classList.remove('hint');void t.el.offsetWidth;t.el.classList.add('hint');speak('Tente girar esta pedra!');setTimeout(()=>t.el.classList.remove('hint'),2100)}
+function hopFrog(seq){
+ const f=$('frog');f.classList.remove('idle');speak('Oba! Vamos lá!');
+ const pts=seq.map(t=>[(t.c+1)*S,t.r*S]).concat([[(n+1)*S,r1*S]]);let i=0;
+ const step=()=>{if(i>=pts.length){arrive();return}f.classList.remove('hop');void f.offsetWidth;f.classList.add('hop');f.style.left=pts[i][0]+'px';f.style.top=pts[i][1]+'px';tone(400+i*60,.12,'sine',.25,0,700+i*60);i++;setTimeout(step,300)};
+ step();
+}
+function arrive(){confetti();[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.25,i*.1));speak('Uhuu! O sapinho chegou em casa!');
+ document.querySelectorAll('#stars span')[lvl].classList.add('on');lvl++;
+ setTimeout(()=>{if(lvl>=LEVELS.length){$('end').classList.add('show');speak('Parabéns! Você é o mestre dos caminhos!')}else build()},2300)}
+addEventListener('resize',()=>{if(grid)render()});
+</script>
+</body>
+</html>
