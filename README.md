@@ -19,6 +19,8 @@ Jogos educativos para crianças de **4 a 7 anos**, feitos para jogar no celular 
 | 🎭 [Teatro das Sombras](teatro-das-sombras/) | Formas e percepção visual |
 | 🤖 [Fábrica de Robôs](fabrica-de-robos/) | Montagem, formas e cores |
 | 🚂 [Trem dos Padrões](trem-dos-padroes/) | Sequências e padrões |
+| 🔤 [Monte a Palavra](monte-a-palavra/) | Leitura e escrita (montar a palavra da figura) |
+| 🕵️ [Detetive do Intruso](detetive-do-intruso/) | Raciocínio lógico e categorias |
 
 ## ✨ Recursos
 - Voz natural gravada (neural) em **português** ou **inglês**, igual em qualquer aparelho ou navegador
