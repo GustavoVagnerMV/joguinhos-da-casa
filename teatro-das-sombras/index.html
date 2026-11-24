@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#3a2a5e">
-<title>Teatro das Sombras</title>
+<title data-en="Shadow Theater">Teatro das Sombras</title>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
 <style>
 :root{--ol:#2d1b4e}
@@ -59,36 +59,42 @@ main{position:fixed;inset:0;padding:80px 10px 12px;display:flex;flex-direction:c
   <div id="stage"><div class="valance"></div><div class="curtain l"></div><div class="curtain r"></div><div id="shadows"></div></div>
   <div id="shelf"></div>
 </main>
-<div id="start" class="overlay show"><div class="box"><div class="big">🎭</div><h2>Teatro das Sombras</h2><p>Arraste cada figura até a sua sombra!</p><button class="play" id="go">▶ JOGAR</button></div></div>
-<div id="end" class="overlay"><div class="box"><div class="big">🏆</div><h2>Bravo! Bravo!</h2><p>👏 O teatro aplaude você! 👏</p><button class="play" id="again">🔄 DE NOVO</button></div></div>
+<div id="start" class="overlay show"><div class="box"><div class="big">🎭</div><h2 data-en="Shadow Theater">Teatro das Sombras</h2><p data-en="Drag each picture to its shadow!">Arraste cada figura até a sua sombra!</p><button class="play" id="go" data-en="▶ PLAY">▶ JOGAR</button><br><button class="lang-toggle"></button></div></div>
+<div id="end" class="overlay"><div class="box"><div class="big">🏆</div><h2>Bravo! Bravo!</h2><p data-en="👏 The theater applauds you! 👏">👏 O teatro aplaude você! 👏</p><button class="play" id="again" data-en="🔄 AGAIN">🔄 DE NOVO</button></div></div>
 
+<script src="../comum/voz.js"></script>
 <script>
 const AC=window.AudioContext||window.webkitAudioContext;let ac;
 function tone(f,d=.15,type='sine',vol=.25,delay=0,f2){try{ac=ac||new AC();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
-let voice;function pickVoice(){const v=speechSynthesis.getVoices();voice=v.find(x=>/pt[-_]BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))}
-if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.95;u.pitch=1.4;speechSynthesis.speak(u)}
 function confetti(n=160){const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);const W=c.width=innerWidth,H=c.height=innerHeight,x=c.getContext('2d'),cl=['#ff5d8f','#ffd23f','#3bceac','#5e60ce','#ff8c42','#4cc9f0'];const ps=Array.from({length:n},()=>({x:W/2,y:H*.4,vx:(Math.random()-.5)*18,vy:-Math.random()*15-4,s:Math.random()*9+8,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*cl.length|0]}));let f=0;(function L(){x.clearRect(0,0,W,H);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.strokeStyle='#2d1b4e';x.lineWidth=2;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.strokeRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<170)requestAnimationFrame(L);else c.remove()})()}
 const $=id=>document.getElementById(id);
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const pick=a=>a[Math.random()*a.length|0];
 
-const ITEMS=[['🐘','o elefante'],['🦒','a girafa'],['🐌','o caracol'],['🦀','o caranguejo'],['🐢','a tartaruga'],['🦋','a borboleta'],
- ['✈️','o avião'],['🚲','a bicicleta'],['🎸','o violão'],['☂️','o guarda-chuva'],['🍐','a pera'],['🍌','a banana'],['🦕','o dinossauro'],
- ['🐇','o coelho'],['🐓','o galo'],['🦈','o tubarão'],['🐙','o polvo'],['🌵','o cacto'],['🚀','o foguete'],['⚓','a âncora'],['🔑','a chave'],
- ['🍄','o cogumelo'],['🏰','o castelo'],['🐿️','o esquilo'],['🦩','o flamingo'],['🚁','o helicóptero'],['🐳','a baleia'],['🦔','o porco-espinho']];
+/*FALAS*/
+const ITEMS=[['🐘',L('o elefante','the elephant')],['🦒',L('a girafa','the giraffe')],['🐌',L('o caracol','the snail')],['🦀',L('o caranguejo','the crab')],['🐢',L('a tartaruga','the turtle')],['🦋',L('a borboleta','the butterfly')],['✈️',L('o avião','the airplane')],['🚲',L('a bicicleta','the bicycle')],['🎸',L('o violão','the guitar')],['☂️',L('o guarda-chuva','the umbrella')],['🍐',L('a pera','the pear')],['🍌',L('a banana','the banana')],['🦕',L('o dinossauro','the dinosaur')],['🐇',L('o coelho','the rabbit')],['🐓',L('o galo','the rooster')],['🦈',L('o tubarão','the shark')],['🐙',L('o polvo','the octopus')],['🌵',L('o cacto','the cactus')],['🚀',L('o foguete','the rocket')],['⚓',L('a âncora','the anchor')],['🔑',L('a chave','the key')],['🍄',L('o cogumelo','the mushroom')],['🏰',L('o castelo','the castle')],['🐿️',L('o esquilo','the squirrel')],['🦩',L('o flamingo','the flamingo')],['🚁',L('o helicóptero','the helicopter')],['🐳',L('a baleia','the whale')],['🦔',L('o porco-espinho','the hedgehog')]];
+const F={
+ intro:L('Arraste cada figura até a sua sombra!','Drag each picture to its shadow!'),
+ mir:L('Cuidado! As sombras estão viradas!','Watch out! The shadows are flipped!'),
+ where:L('Onde está a sombra?','Where is the shadow?'),
+ ok:n=>L(`Isso! É ${n}!`,`Yes! It's ${n}!`),
+ no:L('Hmm, essa sombra não é dele. Tente outra!',"Hmm, that's not its shadow. Try another one!"),
+ end:L('Bravo! Você achou todas as sombras!','Bravo! You found all the shadows!')
+};
+function falas(){return [F.intro,F.mir,F.where,F.no,F.end].concat(ITEMS.map(i=>F.ok(i[1])))}
+/*FIM-FALAS*/
 const ROUNDS=8;let round=0,deck,cur,found,busy=false;
 const stage=$('stage');
 $('stars').innerHTML='<span>⭐</span>'.repeat(ROUNDS);
 $('go').onclick=()=>{$('start').classList.remove('show');startGame()};
 $('again').onclick=()=>{$('end').classList.remove('show');startGame()};
-$('say').onclick=()=>speak('Arraste cada figura até a sua sombra!');
+$('say').onclick=()=>speak(F.intro);
 /* lanterna que segue o dedo */
 addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();stage.style.setProperty('--x',(e.clientX-r.left)+'px');stage.style.setProperty('--y',(e.clientY-r.top)+'px')});
 
 function startGame(){round=0;deck=shuffle([...ITEMS]);document.querySelectorAll('#stars span').forEach(s=>s.classList.remove('on'));next()}
 function next(){
- if(round>=ROUNDS){confetti(220);[523,659,784,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.25,i*.12));speak('Bravo! Você achou todas as sombras!');$('end').classList.add('show');return}
+ if(round>=ROUNDS){confetti(220);[523,659,784,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.25,i*.12));speak(F.end);$('end').classList.add('show');return}
  busy=false;found=0;const k=round<3?3:4,mir=round>=6;
  if(deck.length<k)deck=shuffle([...ITEMS]);cur=deck.splice(0,k);
  const W=innerWidth,H=innerHeight;
@@ -99,7 +105,8 @@ function next(){
  const sw=stage.clientWidth*.76,shh=stage.clientHeight-60,cols=(k===4&&sw<shh*1.3)?2:k,rows=Math.ceil(k/cols);
  const fs=Math.min(sw/cols,shh/rows)*.62,cap=Math.min(fs,170);
  shuffle([...cur]).forEach(it=>{const d=document.createElement('div');d.className='sh'+(mir?' mir':'');d.dataset.e=it[0];d.innerHTML=`<span class="e" style="font-size:${cap}px">${it[0]}</span>`;sh.appendChild(d)});
- setTimeout(()=>speak(round===0?'Arraste cada figura até a sua sombra!':mir?'Cuidado! As sombras estão viradas!':'Onde está a sombra?'),350);
+ speak.preload(cur.map(it=>F.ok(it[1])).concat([F.no]));
+ setTimeout(()=>speak(round===0?F.intro:mir?F.mir:F.where),350);
 }
 function shadowAt(x,y){return[...document.querySelectorAll('.sh:not(.found)')].find(s=>{const r=s.getBoundingClientRect(),m=20;return x>r.left-m&&x<r.right+m&&y>r.top-m&&y<r.bottom+m})}
 function bind(el,it){let sx,sy,c0,drag=false,over;
@@ -109,9 +116,9 @@ function bind(el,it){let sx,sy,c0,drag=false,over;
  const end=e=>{if(!drag)return;drag=false;el.classList.remove('drag');over&&over.classList.remove('over');over=null;
   const s=e.type==='pointerup'?shadowAt(c0.x+e.clientX-sx,c0.y+e.clientY-sy):null;
   if(s&&s.dataset.e===it[0]){el.classList.add('gone');el.style.transform='';s.classList.add('found');const r=s.getBoundingClientRect();sparks(r.left+r.width/2,r.top+r.height/2);
-   [660,880,1100].forEach((f,i)=>tone(f,.14,'triangle',.25,i*.08));speak(`Isso! É ${it[1]}!`);found++;
+   [660,880,1100].forEach((f,i)=>tone(f,.14,'triangle',.25,i*.08));speak(F.ok(it[1]));found++;
    if(found===cur.length){busy=true;setTimeout(()=>{confetti();document.querySelectorAll('#stars span')[round].classList.add('on');round++;setTimeout(next,1600)},700)}}
-  else{el.style.transform='';if(s){s.classList.remove('no');void s.offsetWidth;s.classList.add('no');tone(300,.35,'sawtooth',.1,0,140);speak('Hmm, essa sombra não é dele. Tente outra!')}}};
+  else{el.style.transform='';if(s){s.classList.remove('no');void s.offsetWidth;s.classList.add('no');tone(300,.35,'sawtooth',.1,0,140);speak(F.no)}}};
  el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
 }
 function sparks(x,y){for(let i=0;i<6;i++){const s=document.createElement('div');s.className='spark';s.textContent=pick(['✨','⭐','🌟','💫']);s.style.left=x+'px';s.style.top=y+'px';const a=i/6*Math.PI*2;s.style.setProperty('--dx',`calc(-50% + ${Math.cos(a)*110}px)`);s.style.setProperty('--dy',`calc(-50% + ${Math.sin(a)*110}px)`);document.body.appendChild(s);setTimeout(()=>s.remove(),800)}}

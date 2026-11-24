@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#6ec6ff">
-<title>Monstrinho Comilão</title>
+<title data-en="Hungry Monster">Monstrinho Comilão</title>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
 <style>
 :root{--ol:#2d1b4e}
@@ -82,7 +82,7 @@ main{position:fixed;inset:0;padding:80px 12px 16px;display:flex;flex-direction:c
 <div class="top"><a class="btn" href="../index.html">🏠</a><div id="stars"></div><button class="btn" id="say">🔊</button></div>
 
 <main>
-  <div class="bubble" id="bubble">Oi! Eu sou o Bolota!</div>
+  <div class="bubble" id="bubble" data-en="Hi! I'm Bolota!">Oi! Eu sou o Bolota!</div>
   <div id="mwrap">
   <svg id="monster" viewBox="0 0 300 300">
     <ellipse cx="150" cy="290" rx="100" ry="10" fill="rgba(45,27,78,.18)"/>
@@ -120,9 +120,10 @@ main{position:fixed;inset:0;padding:80px 12px 16px;display:flex;flex-direction:c
   <div id="plates"></div>
 </main>
 
-<div id="start" class="overlay show"><div class="box"><div class="big">👾</div><h2>Monstrinho Comilão</h2><p>O Bolota está com fome!<br>Dê a comida da cor que ele pedir.</p><button class="play" id="go">▶ JOGAR</button></div></div>
-<div id="end" class="overlay"><div class="box"><div class="big">🎉</div><h2>Barriga cheia!</h2><p>O Bolota amou! Obrigado! 💖</p><button class="play" id="again">🔄 DE NOVO</button></div></div>
+<div id="start" class="overlay show"><div class="box"><div class="big">👾</div><h2 data-en="Hungry Monster">Monstrinho Comilão</h2><p data-en="Bolota is hungry!<br>Give him food in the color he asks for.">O Bolota está com fome!<br>Dê a comida da cor que ele pedir.</p><button class="play" id="go" data-en="▶ PLAY">▶ JOGAR</button><br><button class="lang-toggle"></button></div></div>
+<div id="end" class="overlay"><div class="box"><div class="big">🎉</div><h2 data-en="Tummy full!">Barriga cheia!</h2><p data-en="Bolota loved it! Thank you! 💖">O Bolota amou! Obrigado! 💖</p><button class="play" id="again" data-en="🔄 AGAIN">🔄 DE NOVO</button></div></div>
 
+<script src="../comum/voz.js"></script>
 <script>
 const AC=window.AudioContext||window.webkitAudioContext;let ac;
 function tone(f,d=.15,type='sine',vol=.25,delay=0,f2){try{ac=ac||new AC();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
@@ -134,27 +135,35 @@ const sfx={
  giggle(){[700,900,750,1000,800,1100].forEach((f,i)=>tone(f,.07,'triangle',.2,i*.07))},
  win(){[523,659,784,659,784,1047,1319].forEach((f,i)=>tone(f,.22,'square',.1,i*.13))}
 };
-let voice;function pickVoice(){const v=speechSynthesis.getVoices();voice=v.find(x=>/pt[-_]BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))}
-if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.95;u.pitch=1.5;speechSynthesis.speak(u)}
 function confetti(n=160){const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);const W=c.width=innerWidth,H=c.height=innerHeight,x=c.getContext('2d'),cl=['#ff5d8f','#ffd23f','#3bceac','#5e60ce','#ff8c42','#4cc9f0'];const ps=Array.from({length:n},()=>({x:W/2,y:H*.4,vx:(Math.random()-.5)*18,vy:-Math.random()*15-4,s:Math.random()*9+8,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*cl.length|0]}));let f=0;(function L(){x.clearRect(0,0,W,H);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.strokeStyle='#2d1b4e';x.lineWidth=2;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.strokeRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<170)requestAnimationFrame(L);else c.remove()})()}
 
+/*FALAS*/
 const COLORS=[
- {id:'vermelha',hex:'#ff4d4d',foods:['🍎','🍓','🍒','🍅']},
- {id:'amarela',hex:'#ffc914',foods:['🍌','🍋','🌽','🧀']},
- {id:'verde',hex:'#5ccf5c',foods:['🥦','🥝','🍏','🥒','🥑']},
- {id:'laranja',hex:'#ff9433',foods:['🥕','🍊']},
- {id:'roxa',hex:'#a66cff',foods:['🍇','🍆']},
- {id:'marrom',hex:'#b07a4f',foods:['🍪','🥔','🥥']},
+ {id:L('vermelha','red'),hex:'#ff4d4d',foods:['🍎','🍓','🍒','🍅']},
+ {id:L('amarela','yellow'),hex:'#ffc914',foods:['🍌','🍋','🌽','🧀']},
+ {id:L('verde','green'),hex:'#5ccf5c',foods:['🥦','🥝','🍏','🥒','🥑']},
+ {id:L('laranja','orange'),hex:'#ff9433',foods:['🥕','🍊']},
+ {id:L('roxa','purple'),hex:'#a66cff',foods:['🍇','🍆']},
+ {id:L('marrom','brown'),hex:'#b07a4f',foods:['🍪','🥔','🥥']},
 ];
+const F={
+ ask:c=>L(`Quero uma comida ${c.id}!`,`I want something ${c.id}!`),
+ yuck:c=>L(`Eca! Essa não! Eu quero comida ${c.id}!`,`Yuck! Not that one! I want something ${c.id}!`),
+ bubble:c=>{const p=`<span class="pill" style="background:${c.hex}">${c.id.toUpperCase()}</span>`;return L(`Quero comida ${p}!`,`I want ${p} food!`)},
+ tap:L(['Hihihi!','Faz cócegas!','Estou com fome!','Nham?'],['Hee hee!','That tickles!',"I'm hungry!",'Yum?']),
+ yum:L(['Nham nham! Que delícia!','Hummm! Gostoso!','Obrigado! Adorei!','Iupi! Que gostoso!'],['Yum yum! Delicious!','Mmm! Tasty!','Thank you! I loved it!','Yippee! So yummy!']),
+ fin:L('Uhuuu! Minha barriga está cheia! Obrigado, amigo!','Woohoo! My tummy is full! Thank you, friend!')
+};
+function falas(){return [...COLORS.flatMap(c=>[F.ask(c),F.yuck(c)]),...F.tap,...F.yum,F.fin].map(t=>[t,'monstro'])}
+/*FIM-FALAS*/
 const ROUNDS=8;let round=0,target,busy=false,lastTarget;
 const $=id=>document.getElementById(id);
 const svg=$('monster'),mbody=$('mbody'),bubble=$('bubble');
 $('stars').innerHTML='<span>⭐</span>'.repeat(ROUNDS);
 $('go').onclick=()=>{$('start').classList.remove('show');startGame()};
 $('again').onclick=()=>{$('end').classList.remove('show');svg.classList.remove('dance');startGame()};
-const askText=()=>`Quero uma comida ${target.id}!`;
-$('say').onclick=bubble.onclick=()=>target&&speak(askText());
+const askText=()=>F.ask(target);
+$('say').onclick=bubble.onclick=()=>target&&speak(askText(),'monstro');
 
 /* geometria do monstro na tela */
 function geo(){const r=svg.getBoundingClientRect(),s=Math.min(r.width,r.height)/300;return{s,ox:r.left+(r.width-300*s)/2,oy:r.top+(r.height-300*s)/2}}
@@ -164,7 +173,7 @@ addEventListener('pointermove',e=>lookAt(e.clientX,e.clientY));
 function mouth(m){$('mSmile').style.display=m==='smile'?'':'none';$('mOpen').style.display=m==='open'?'':'none';$('mYuck').style.display=m==='yuck'?'':'none'}
 function anim(el,cls){el.classList.remove(cls);void el.getBoundingClientRect();el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),1000)}
 
-svg.addEventListener('pointerdown',()=>{if(busy)return;sfx.giggle();anim(svg,'wiggle');speak(['Hihihi!','Faz cócegas!','Estou com fome!','Nham?'][Math.random()*4|0])});
+svg.addEventListener('pointerdown',()=>{if(busy)return;sfx.giggle();anim(svg,'wiggle');speak(pick(F.tap),'monstro')});
 
 function startGame(){round=0;busy=false;svg.style.setProperty('--skin','#4cc9f0');document.querySelectorAll('#stars span').forEach(s=>s.classList.remove('on'));next()}
 const pick=a=>a[Math.random()*a.length|0];
@@ -172,14 +181,15 @@ function next(){
  if(round>=ROUNDS){finale();return}
  busy=false;mouth('smile');
  do{target=pick(COLORS)}while(target===lastTarget);lastTarget=target;
- bubble.innerHTML=`Quero comida <span class="pill" style="background:${target.hex}">${target.id.toUpperCase()}</span>!`;
+ bubble.innerHTML=F.bubble(target);
 bubble.style.animation='none';void bubble.offsetWidth;bubble.style.animation='';
  const others=COLORS.filter(c=>c!==target).sort(()=>Math.random()-.5).slice(0,3);
  const items=[{e:pick(target.foods),c:target},...others.map(c=>({e:pick(c.foods),c}))].sort(()=>Math.random()-.5);
  const P=Math.min((innerWidth-24)/4.6,innerHeight*.15,130);
  const pl=$('plates');pl.innerHTML='';pl.style.setProperty('--p',P+'px');
  items.forEach((it,i)=>{const p=document.createElement('div');p.className='plate';p.style.animationDelay=(i*.08)+'s';const f=document.createElement('div');f.className='food';f.textContent=it.e;p.appendChild(f);pl.appendChild(p);bindFood(f,it)});
- setTimeout(()=>speak(askText()),300);
+ speak.preload([[askText(),'monstro'],[F.yuck(target),'monstro']].concat(F.yum.map(t=>[t,'monstro'])));
+ setTimeout(()=>speak(askText(),'monstro'),300);
 }
 function bindFood(el,it){let sx,sy,c0,drag=false;
  const near=(dx,dy)=>{const m=pt(150,200);return Math.hypot(c0.x+dx-m.x,c0.y+dy-m.y)<95*m.s};
@@ -192,13 +202,13 @@ function bindFood(el,it){let sx,sy,c0,drag=false;
  function eat(el){busy=true;const m=pt(150,200);el.style.transition='transform .25s ease-in';el.style.transform=`translate(${m.x-c0.x}px,${m.y-c0.y}px) scale(.15)`;
   setTimeout(()=>{el.style.visibility='hidden';sfx.chomp();svg.classList.add('chomp');let k=0;const iv=setInterval(()=>{mouth(k++%2?'open':'smile');crumbs(m.x,m.y,it.e)},220);
    setTimeout(()=>{clearInterval(iv);svg.classList.remove('chomp');mouth('smile');svg.style.setProperty('--skin',target.hex);anim(svg,'happy');sfx.yum();
-    speak(pick(['Nham nham! Que delícia!','Hummm! Gostoso!','Obrigado! Adorei!','Iupi! Que gostoso!']));
+    speak(pick(F.yum),'monstro');
     document.querySelectorAll('#stars span')[round].classList.add('on');round++;setTimeout(next,1800)},900)},250)}
- function yuck(el){busy=true;mouth('yuck');sfx.yuck();anim(svg,'shake');speak(`Eca! Essa não! Eu quero comida ${target.id}!`);back(el);setTimeout(()=>{mouth('smile');busy=false},1100)}
+ function yuck(el){busy=true;mouth('yuck');sfx.yuck();anim(svg,'shake');speak(F.yuck(target),'monstro');back(el);setTimeout(()=>{mouth('smile');busy=false},1100)}
 }
 function crumbs(x,y,e){for(let i=0;i<2;i++){const c=document.createElement('div');c.className='crumb';c.textContent=Math.random()<.5?e:'✨';c.style.left=x+'px';c.style.top=y+'px';c.style.setProperty('--dx',(Math.random()-.5)*160+'px');c.style.setProperty('--dy',(Math.random()*-90-20)+'px');document.body.appendChild(c);setTimeout(()=>c.remove(),800)}}
-function finale(){busy=true;$('plates').innerHTML='';bubble.innerHTML='Barriga cheia! 🎉';svg.classList.add('dance');sfx.win();confetti();
- speak('Uhuuu! Minha barriga está cheia! Obrigado, amigo!');
+function finale(){busy=true;$('plates').innerHTML='';bubble.innerHTML=L('Barriga cheia! 🎉','Tummy full! 🎉');svg.classList.add('dance');sfx.win();confetti();
+ speak(F.fin,'monstro');
  let i=0;const iv=setInterval(()=>{svg.style.setProperty('--skin',COLORS[i++%COLORS.length].hex);if(i>12)clearInterval(iv)},300);
  setTimeout(()=>$('end').classList.add('show'),3200)}
 </script>

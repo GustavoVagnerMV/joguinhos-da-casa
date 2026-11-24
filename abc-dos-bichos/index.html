@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#fb8500">
-<title>ABC dos Bichos</title>
+<title data-en="Animal ABC">ABC dos Bichos</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
@@ -50,44 +50,59 @@ main{position:fixed;inset:0;padding:80px 16px 20px;display:flex;flex-direction:c
 <body>
 <div class="top"><a class="btn" href="../index.html">🏠</a><div id="stars"></div><button class="btn" id="say">🔊</button></div>
 <main>
-  <div class="q">Qual letra começa?</div>
+  <div class="q" data-en="Which letter comes first?">Qual letra começa?</div>
   <div id="card"><span class="spk">🔈</span><div id="emoji"></div><div id="word"></div></div>
   <div id="opts"></div>
 </main>
-<div id="start" class="overlay show"><div class="box"><div class="big">🔤</div><h2>ABC dos Bichos</h2><p>Descubra a primeira letra!</p><button class="play" id="go">▶ Jogar</button></div></div>
-<div id="end" class="overlay"><div class="box"><div class="big">🏆</div><h2>Você arrasou!</h2><p>⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐</p><button class="play" id="again">🔄 De novo</button></div></div>
+<div id="start" class="overlay show"><div class="box"><div class="big">🔤</div><h2 data-en="Animal ABC">ABC dos Bichos</h2><p data-en="Find the first letter!">Descubra a primeira letra!</p><button class="play" id="go" data-en="▶ Play">▶ Jogar</button><br><button class="lang-toggle"></button></div></div>
+<div id="end" class="overlay"><div class="box"><div class="big">🏆</div><h2 data-en="You rock!">Você arrasou!</h2><p>⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐</p><button class="play" id="again" data-en="🔄 Again">🔄 De novo</button></div></div>
 
+<script src="../comum/voz.js"></script>
 <script>
 const AC=window.AudioContext||window.webkitAudioContext;let ac;
 function tone(f,d=.15,type='sine',vol=.25,delay=0){try{ac=ac||new AC();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
 const sfx={good(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.25,i*.09))},bad(){tone(260,.18,'sine',.25);tone(200,.25,'sine',.25,.14)},win(){[523,659,784,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.25,i*.12))}};
-let voice;function pickVoice(){const v=speechSynthesis.getVoices();voice=v.find(x=>/pt[-_]BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))}
-if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.85;u.pitch=1.25;speechSynthesis.speak(u)}
 function confetti(n=120){const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);const W=c.width=innerWidth,H=c.height=innerHeight,x=c.getContext('2d'),cl=['#ff5d8f','#ffd23f','#3bceac','#5e60ce','#ff8c42','#4cc9f0'];const ps=Array.from({length:n},()=>({x:W/2,y:H*.45,vx:(Math.random()-.5)*18,vy:-Math.random()*15-4,s:Math.random()*8+7,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*cl.length|0]}));let f=0;(function L(){x.clearRect(0,0,W,H);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<160)requestAnimationFrame(L);else c.remove()})()}
 
-const WORDS=[
+/*FALAS*/
+const WORDS=L([
  ['ABELHA','🐝'],['BOLA','⚽'],['CASA','🏠'],['DADO','🎲'],['ELEFANTE','🐘'],['FOCA','🦭'],['GATO','🐱'],
  ['HIPOPÓTAMO','🦛'],['ILHA','🏝️'],['JACARÉ','🐊'],['KIWI','🥝'],['LEÃO','🦁'],['MAÇÃ','🍎'],['NAVIO','🚢'],
  ['OVO','🥚'],['PATO','🦆'],['QUEIJO','🧀'],['RATO','🐭'],['SAPO','🐸'],['TOMATE','🍅'],['UVA','🍇'],
  ['VACA','🐮'],['XÍCARA','☕'],['ZEBRA','🦓'],['AVIÃO','✈️'],['BANANA','🍌'],['CAVALO','🐴'],['MACACO','🐵'],
  ['PEIXE','🐟'],['TARTARUGA','🐢'],['BORBOLETA','🦋'],['ESTRELA','⭐'],['FLOR','🌸'],['LUA','🌙'],['SOL','☀️'],
  ['URSO','🐻'],['COELHO','🐰'],['PORCO','🐷'],['NUVEM','☁️'],['DINOSSAURO','🦖'],['GIRAFA','🦒'],['RAPOSA','🦊']
-];
-const ABC='ABCDEFGHIJLMNOPRSTUVZ';
+],[
+ ['APPLE','🍎'],['BALL','⚽'],['CAT','🐱'],['DOG','🐶'],['EGG','🥚'],['FISH','🐟'],['GRAPES','🍇'],
+ ['HOUSE','🏠'],['ICE','🧊'],['JUICE','🧃'],['KEY','🔑'],['LION','🦁'],['MOON','🌙'],['NOSE','👃'],
+ ['OWL','🦉'],['PIG','🐷'],['QUEEN','👸'],['RABBIT','🐰'],['SUN','☀️'],['TREE','🌳'],['UMBRELLA','☂️'],
+ ['VAN','🚐'],['WHALE','🐳'],['ZEBRA','🦓'],['BEAR','🐻'],['CAR','🚗'],['DUCK','🦆'],['FROG','🐸'],
+ ['MONKEY','🐵'],['TURTLE','🐢'],['STAR','⭐'],['HORSE','🐴'],['BANANA','🍌'],['ROBOT','🤖'],['ROCKET','🚀'],
+ ['PANDA','🐼'],['GIRAFFE','🦒'],['ELEPHANT','🐘'],['TIGER','🐯'],['BUS','🚌'],['TRAIN','🚂'],['CAKE','🎂']
+]);
+const ABC=L('ABCDEFGHIJLMNOPRSTUVZ','ABCDEFGHIJKLMNOPRSTUVWZ');
+const cap=w=>w[0]+w.slice(1).toLowerCase();
+const F={
+ ask:w=>L(`Com que letra começa ${w.toLowerCase()}?`,`What letter does ${w.toLowerCase()} start with?`),
+ word:w=>w.toLowerCase(),
+ ok:w=>L(`${w[0]}, de ${cap(w)}! Muito bem!`,`${w[0]} is for ${cap(w)}! Great job!`),
+ no:c=>L(`Não é ${c}. Tente outra!`,`Not ${c}. Try another one!`),
+ end:L('Parabéns! Você conhece muitas letras!','Congratulations! You know so many letters!')
+};
+function falas(){const a=[F.end];WORDS.forEach(([w])=>a.push(F.ask(w),F.word(w),F.ok(w)));[...ABC].forEach(c=>a.push(F.no(c)));return a}
+/*FIM-FALAS*/
 const COLORS=['linear-gradient(135deg,#ff5d8f,#c9184a)','linear-gradient(135deg,#3a86ff,#5e60ce)','linear-gradient(135deg,#8338ec,#b5179e)'];
 const ROUNDS=10;let round=0,deck=[],cur,lock=false;
 const $=id=>document.getElementById(id);
 $('stars').innerHTML='<span>⭐</span>'.repeat(ROUNDS);
 $('go').onclick=()=>{$('start').classList.remove('show');startGame()};
 $('again').onclick=()=>{$('end').classList.remove('show');startGame()};
-const ask=()=>speak(`Com que letra começa ${cur[0].toLowerCase()}?`);
-$('say').onclick=ask;$('card').onclick=()=>speak(cur[0].toLowerCase());
-const cap=w=>w[0]+w.slice(1).toLowerCase();
+const ask=()=>speak(F.ask(cur[0]));
+$('say').onclick=ask;$('card').onclick=()=>speak(F.word(cur[0]));
 
 function startGame(){round=0;deck=[...WORDS].sort(()=>Math.random()-.5);document.querySelectorAll('#stars span').forEach(s=>s.classList.remove('on'));next()}
 function next(){
- if(round>=ROUNDS){sfx.win();confetti(200);speak('Parabéns! Você conhece muitas letras!');$('end').classList.add('show');return}
+ if(round>=ROUNDS){sfx.win();confetti(200);speak(F.end);$('end').classList.add('show');return}
  lock=false;cur=deck[round];const [w,e]=cur;
  $('emoji').textContent=e;$('emoji').style.animation='none';$('emoji').offsetWidth;$('emoji').style.animation='';
  const s=Math.min(64,(Math.min(innerWidth*.92,560)-48-(w.length-1)*6)/w.length);
@@ -95,14 +110,15 @@ function next(){
  wd.innerHTML=[...w].map((c,i)=>`<div class="l${i?'':' first'}">${i?c:'?'}</div>`).join('');
  const opts=new Set([w[0]]);while(opts.size<3)opts.add(ABC[Math.random()*ABC.length|0]);
  const o=$('opts');o.innerHTML='';
- [...opts].sort(()=>Math.random()-.5).forEach((L,i)=>{const b=document.createElement('button');b.className='opt';b.textContent=L;b.style.setProperty('--c',COLORS[i]);b.onclick=()=>answer(b,L);o.appendChild(b)});
+ [...opts].sort(()=>Math.random()-.5).forEach((ch,i)=>{const b=document.createElement('button');b.className='opt';b.textContent=ch;b.style.setProperty('--c',COLORS[i]);b.onclick=()=>answer(b,ch);o.appendChild(b)});
+ speak.preload([F.ask(w),F.ok(w)].concat([...opts].filter(c=>c!==w[0]).map(F.no)));
  setTimeout(ask,350);
 }
-function answer(b,L){if(lock)return;const w=cur[0];
- if(L===w[0]){lock=true;b.classList.add('ok');const f=document.querySelector('.l.first');f.textContent=L;f.classList.add('done');sfx.good();confetti(80);
+function answer(b,ch){if(lock)return;const w=cur[0];
+ if(ch===w[0]){lock=true;b.classList.add('ok');const f=document.querySelector('.l.first');f.textContent=ch;f.classList.add('done');sfx.good();confetti(80);
   document.querySelectorAll('#stars span')[round].classList.add('on');
-  speak(`${L}, de ${cap(w)}! Muito bem!`);round++;setTimeout(next,2400)}
- else{b.classList.add('no');sfx.bad();speak(`Não é ${L}. Tente outra!`)}
+  speak(F.ok(w));round++;setTimeout(next,2400)}
+ else{b.classList.add('no');sfx.bad();speak(F.no(ch))}
 }
 </script>
 </body>

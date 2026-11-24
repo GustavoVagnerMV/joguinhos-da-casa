@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#a18cd1">
-<title>Quebra-Cabeça Mágico</title>
+<title data-en="Magic Puzzle">Quebra-Cabeça Mágico</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
@@ -48,48 +48,50 @@ body{font-family:'Fredoka','Trebuchet MS',sans-serif;background:linear-gradient(
 </style>
 </head>
 <body>
-<div class="top"><a class="btn" href="../index.html">🏠</a><h1>🧩 Quebra-Cabeça</h1><button class="btn" id="menuBtn">⚙️</button></div>
+<div class="top"><a class="btn" href="../index.html">🏠</a><h1 data-en="🧩 Puzzle">🧩 Quebra-Cabeça</h1><button class="btn" id="menuBtn">⚙️</button></div>
 <div id="stage"></div>
 
 <div id="menu" class="overlay show"><div class="card">
-  <div class="big">🧩</div><h2>Quebra-Cabeça Mágico</h2><p>Quantas peças você quer?</p>
+  <div class="big">🧩</div><h2 data-en="Magic Puzzle">Quebra-Cabeça Mágico</h2><p data-en="How many pieces?">Quantas peças você quer?</p>
   <div class="choices">
-    <button data-d="facil" style="--c:linear-gradient(135deg,#3bceac,#0ead69)">😊<b>4 peças</b></button>
-    <button data-d="medio" style="--c:linear-gradient(135deg,#ffb703,#fb8500)">😃<b>6 peças</b></button>
-    <button data-d="dificil" style="--c:linear-gradient(135deg,#ff5d8f,#c9184a)">🤩<b>9 peças</b></button>
+    <button data-d="facil" style="--c:linear-gradient(135deg,#3bceac,#0ead69)">😊<b data-en="4 pieces">4 peças</b></button>
+    <button data-d="medio" style="--c:linear-gradient(135deg,#ffb703,#fb8500)">😃<b data-en="6 pieces">6 peças</b></button>
+    <button data-d="dificil" style="--c:linear-gradient(135deg,#ff5d8f,#c9184a)">🤩<b data-en="9 pieces">9 peças</b></button>
   </div>
+  <button class="lang-toggle"></button>
 </div></div>
 
 <div id="win" class="overlay"><div class="card">
   <img id="winImg" alt="">
-  <h2>Parabéns! 🎉</h2>
-  <button class="play" id="next">Próximo ▶</button>
+  <h2 data-en="Great job! 🎉">Parabéns! 🎉</h2>
+  <button class="play" id="next" data-en="Next ▶">Próximo ▶</button>
   <button class="play alt" id="toMenu">⚙️</button>
 </div></div>
 
+<script src="../comum/voz.js"></script>
 <script>
 /* ---------- som, voz e confete ---------- */
 const AC=window.AudioContext||window.webkitAudioContext;let ac;
 function tone(f,d=.15,type='sine',vol=.25,delay=0){try{ac=ac||new AC();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
 const sfx={pick(){tone(500,.07,'triangle',.2)},pop(){tone(660,.08,'triangle',.3);tone(990,.12,'triangle',.22,.06)},win(){[523,659,784,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.25,i*.12))}};
-let voice;function pickVoice(){const v=speechSynthesis.getVoices();voice=v.find(x=>/pt[-_]BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))}
-if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.9;u.pitch=1.25;speechSynthesis.speak(u)}
 function confetti(n=140){const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);const W=c.width=innerWidth,H=c.height=innerHeight,x=c.getContext('2d'),cl=['#ff5d8f','#ffd23f','#3bceac','#5e60ce','#ff8c42','#4cc9f0'];const ps=Array.from({length:n},()=>({x:W/2,y:H*.45,vx:(Math.random()-.5)*18,vy:-Math.random()*15-4,s:Math.random()*8+7,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*cl.length|0]}));let f=0;(function L(){x.clearRect(0,0,W,H);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<160)requestAnimationFrame(L);else c.remove()})()}
 
-/* ---------- cenas desenhadas ---------- */
+/*FALAS*/
 const SCENES=[
- {name:'o leão',e:'🦁',bg:['#ffe259','#ffa751'],deco:['☀️','🌿','🌼','🌻']},
- {name:'o cachorrinho',e:'🐶',bg:['#a1ffce','#faffd1'],deco:['🦴','🌳','⚽','🌸']},
- {name:'o unicórnio',e:'🦄',bg:['#fbc2eb','#a6c1ee'],deco:['🌈','⭐','✨','☁️']},
- {name:'o foguete',e:'🚀',bg:['#4facfe','#5e3bb0'],deco:['⭐','🌙','🪐','✨']},
- {name:'o peixinho',e:'🐠',bg:['#4facfe','#00f2fe'],deco:['🐚','🌊','🐙','💧']},
- {name:'o dinossauro',e:'🦖',bg:['#d4fc79','#96e6a1'],deco:['🌴','🌋','🥚','🌿']},
- {name:'o gatinho',e:'🐱',bg:['#ffecd2','#fcb69f'],deco:['🧶','🐟','🌷','🦋']},
- {name:'o carro',e:'🚗',bg:['#89f7fe','#66a6ff'],deco:['🏁','☁️','🌳','🚦']},
- {name:'o panda',e:'🐼',bg:['#c1f0c1','#7ed6a5'],deco:['🎋','🍃','🌸','☀️']},
- {name:'o polvo',e:'🐙',bg:['#a18cd1','#6a82fb'],deco:['🐚','⭐','🐟','💧']},
+ {name:L('o leão','the lion'),e:'🦁',bg:['#ffe259','#ffa751'],deco:['☀️','🌿','🌼','🌻']},
+ {name:L('o cachorrinho','the puppy'),e:'🐶',bg:['#a1ffce','#faffd1'],deco:['🦴','🌳','⚽','🌸']},
+ {name:L('o unicórnio','the unicorn'),e:'🦄',bg:['#fbc2eb','#a6c1ee'],deco:['🌈','⭐','✨','☁️']},
+ {name:L('o foguete','the rocket'),e:'🚀',bg:['#4facfe','#5e3bb0'],deco:['⭐','🌙','🪐','✨']},
+ {name:L('o peixinho','the little fish'),e:'🐠',bg:['#4facfe','#00f2fe'],deco:['🐚','🌊','🐙','💧']},
+ {name:L('o dinossauro','the dinosaur'),e:'🦖',bg:['#d4fc79','#96e6a1'],deco:['🌴','🌋','🥚','🌿']},
+ {name:L('o gatinho','the kitten'),e:'🐱',bg:['#ffecd2','#fcb69f'],deco:['🧶','🐟','🌷','🦋']},
+ {name:L('o carro','the car'),e:'🚗',bg:['#89f7fe','#66a6ff'],deco:['🏁','☁️','🌳','🚦']},
+ {name:L('o panda','the panda'),e:'🐼',bg:['#c1f0c1','#7ed6a5'],deco:['🎋','🍃','🌸','☀️']},
+ {name:L('o polvo','the octopus'),e:'🐙',bg:['#a18cd1','#6a82fb'],deco:['🐚','⭐','🐟','💧']},
 ];
+const F={start:n=>L(`Vamos montar ${n}!`,`Let's build ${n}!`),win:n=>L(`Parabéns! Você montou ${n}!`,`Great job! You built ${n}!`)};
+function falas(){return SCENES.flatMap(s=>[F.start(s.name),F.win(s.name)])}
+/*FIM-FALAS*/
 function drawScene(s){const S=800,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');
  const g=x.createLinearGradient(0,0,S,S);g.addColorStop(0,s.bg[0]);g.addColorStop(1,s.bg[1]);x.fillStyle=g;x.fillRect(0,0,S,S);
  x.fillStyle='rgba(255,255,255,.25)';[[120,140,100],[690,210,120],[610,660,150],[150,620,80],[400,90,50]].forEach(([a,b,r])=>{x.beginPath();x.arc(a,b,r,0,7);x.fill()});
@@ -119,7 +121,7 @@ function newPuzzle(){
  const order=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const sl=document.createElement('div');sl.className='slot';sl.dataset.r=r;sl.dataset.c=c;board.appendChild(sl);order.push({r,c})}
  order.sort(()=>Math.random()-.5).forEach((p,i)=>{const el=document.createElement('div');el.className='piece';el.style.backgroundImage=`url(${img})`;el.style.animationDelay=(i*.07)+'s';stage.appendChild(el);const pc={...p,el,placed:false,x:0,y:0};pieces.push(pc);addDrag(pc)});
  layout();
- setTimeout(()=>speak(`Vamos montar ${s.name}!`),300);
+ setTimeout(()=>speak(F.start(s.name)),300);
 }
 function setPos(p,x,y){p.x=x;p.y=y;p.el.style.left=x+'px';p.el.style.top=y+'px'}
 function layout(){
@@ -146,7 +148,7 @@ function addDrag(p){const el=p.el;let ox,oy,drag=false;
   else setPos(p,Math.min(Math.max(0,p.x),innerWidth-B.pw),Math.min(Math.max(60,p.y),innerHeight-B.ph))};
  el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end)}
 function spark(x,y){const s=document.createElement('div');s.className='spark';s.textContent=['✨','⭐','💖','🌟'][Math.random()*4|0];s.style.left=x+'px';s.style.top=y+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),700)}
-function win(){board.classList.add('done');sfx.win();confetti();const s=SCENES[sceneIdx%SCENES.length];speak(`Parabéns! Você montou ${s.name}!`);
+function win(){board.classList.add('done');sfx.win();confetti();const s=SCENES[sceneIdx%SCENES.length];speak(F.win(s.name));
  $('winImg').src=img;setTimeout(()=>$('win').classList.add('show'),1300)}
 addEventListener('resize',()=>setTimeout(layout,100));
 </script>

@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#3a86ff">
-<title>Conta Comigo</title>
+<title data-en="Count With Me">Conta Comigo</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
@@ -51,28 +51,36 @@ main{position:fixed;inset:0;padding:80px 16px 18px;display:flex;flex-direction:c
 <div class="top"><a class="btn" href="../index.html">🏠</a><div id="stars"></div><button class="btn" id="say">🔊</button></div>
 <main>
   <div class="q" id="q"></div>
-  <div class="hint">👆 Toque em cada um para contar</div>
+  <div class="hint" data-en="👆 Tap each one to count">👆 Toque em cada um para contar</div>
   <div id="field"></div>
   <div id="answers"></div>
 </main>
-<div id="start" class="overlay show"><div class="card"><div class="big">🔢</div><h2>Conta Comigo</h2><p>Vamos contar juntos?</p><button class="play" id="go">▶ Jogar</button></div></div>
-<div id="end" class="overlay"><div class="card"><div class="big">🏆</div><h2>Você é campeão!</h2><p>⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐</p><button class="play" id="again">🔄 De novo</button></div></div>
+<div id="start" class="overlay show"><div class="card"><div class="big">🔢</div><h2 data-en="Count With Me">Conta Comigo</h2><p data-en="Let's count together!">Vamos contar juntos?</p><button class="play" id="go" data-en="▶ Play">▶ Jogar</button><br><button class="lang-toggle"></button></div></div>
+<div id="end" class="overlay"><div class="card"><div class="big">🏆</div><h2 data-en="You're a champion!">Você é campeão!</h2><p>⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐</p><button class="play" id="again" data-en="🔄 Again">🔄 De novo</button></div></div>
 
+<script src="../comum/voz.js"></script>
 <script>
 const AC=window.AudioContext||window.webkitAudioContext;let ac;
 function tone(f,d=.15,type='sine',vol=.25,delay=0){try{ac=ac||new AC();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
 const sfx={tap(n){tone(400+n*60,.12,'triangle',.3)},good(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.25,i*.09))},bad(){tone(260,.18,'sine',.25);tone(200,.25,'sine',.25,.14)},win(){[523,659,784,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.25,i*.12))}};
-let voice;function pickVoice(){const v=speechSynthesis.getVoices();voice=v.find(x=>/pt[-_]BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))}
-if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.9;u.pitch=1.25;speechSynthesis.speak(u)}
 function confetti(n=120){const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);const W=c.width=innerWidth,H=c.height=innerHeight,x=c.getContext('2d'),cl=['#ff5d8f','#ffd23f','#3bceac','#5e60ce','#ff8c42','#4cc9f0'];const ps=Array.from({length:n},()=>({x:W/2,y:H*.45,vx:(Math.random()-.5)*18,vy:-Math.random()*15-4,s:Math.random()*8+7,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*cl.length|0]}));let f=0;(function L(){x.clearRect(0,0,W,H);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<160)requestAnimationFrame(L);else c.remove()})()}
 
+/*FALAS*/
 const ITEMS=[
- {e:'🍎',n:'maçãs',f:1},{e:'🐶',n:'cachorrinhos'},{e:'⭐',n:'estrelas',f:1},{e:'🐟',n:'peixinhos'},
- {e:'🎈',n:'balões'},{e:'🦋',n:'borboletas',f:1},{e:'🍓',n:'morangos'},{e:'🚗',n:'carrinhos'},
- {e:'🐥',n:'pintinhos'},{e:'🌸',n:'flores',f:1},{e:'🍪',n:'biscoitos'},{e:'⚽',n:'bolas',f:1},
- {e:'🐞',n:'joaninhas',f:1},{e:'🦆',n:'patinhos'},{e:'🍌',n:'bananas',f:1},{e:'🐸',n:'sapinhos'}
+ {e:'🍎',n:L('maçãs','apples'),f:1},{e:'🐶',n:L('cachorrinhos','puppies')},{e:'⭐',n:L('estrelas','stars'),f:1},{e:'🐟',n:L('peixinhos','fish')},
+ {e:'🎈',n:L('balões','balloons')},{e:'🦋',n:L('borboletas','butterflies'),f:1},{e:'🍓',n:L('morangos','strawberries')},{e:'🚗',n:L('carrinhos','cars')},
+ {e:'🐥',n:L('pintinhos','chicks')},{e:'🌸',n:L('flores','flowers'),f:1},{e:'🍪',n:L('biscoitos','cookies')},{e:'⚽',n:L('bolas','balls'),f:1},
+ {e:'🐞',n:L('joaninhas','ladybugs'),f:1},{e:'🦆',n:L('patinhos','ducklings')},{e:'🍌',n:L('bananas','bananas'),f:1},{e:'🐸',n:L('sapinhos','frogs')}
 ];
+const F={
+ q:it=>L(`Quant${it.f?'as':'os'} ${it.n} você vê?`,`How many ${it.n} do you see?`),
+ qShort:it=>L(`Quant${it.f?'as':'os'} ${it.e}?`,`How many ${it.e}?`),
+ ok:(it,c)=>L('Isso! '+(c===1?(it.f?'Uma':'Um')+' só!':(c===2?(it.f?'Duas':'Dois'):c)+' '+it.n+'!'),c===1?'Yes! Just one!':`Yes! ${c} ${it.n}!`),
+ bad:L('Quase! Vamos contar juntos?',"Almost! Let's count together!"),
+ end:L('Parabéns! Você é um campeão da contagem!','Congratulations! You are a counting champion!')
+};
+function falas(){const a=[F.bad,F.end];for(let i=1;i<=10;i++)a.push(String(i));ITEMS.forEach(it=>{a.push(F.q(it));for(let c=1;c<=10;c++)a.push(F.ok(it,c))});return a}
+/*FIM-FALAS*/
 const COLORS=['linear-gradient(135deg,#ff5d8f,#c9184a)','linear-gradient(135deg,#ffb703,#fb8500)','linear-gradient(135deg,#8338ec,#5e60ce)'];
 const ROUNDS=10;let round=0,item,count,tapped,question,lock=false,lastItem;
 const $=id=>document.getElementById(id);
@@ -83,13 +91,13 @@ $('say').onclick=()=>speak(question);
 
 function startGame(){round=0;document.querySelectorAll('#stars span').forEach(s=>s.classList.remove('on'));next()}
 function next(){
- if(round>=ROUNDS){sfx.win();confetti(200);speak('Parabéns! Você é um campeão da contagem!');$('end').classList.add('show');return}
+ if(round>=ROUNDS){sfx.win();confetti(200);speak(F.end);$('end').classList.add('show');return}
  lock=false;tapped=0;
  const max=round<3?5:round<6?7:10;
  do{item=ITEMS[Math.random()*ITEMS.length|0]}while(item===lastItem);lastItem=item;
  count=1+Math.floor(Math.random()*max);
- question=`Quant${item.f?'as':'os'} ${item.n} você vê?`;
- $('q').textContent=`Quant${item.f?'as':'os'} ${item.e}?`;
+ question=F.q(item);
+ $('q').textContent=F.qShort(item);
  const field=$('field');field.innerHTML='';
  const fw=field.clientWidth-28,fh=field.clientHeight-28;
  const k=Math.ceil(Math.sqrt(count*fw/fh)),rr=Math.ceil(count/k);
@@ -102,14 +110,15 @@ function next(){
  while(opts.size<3){let v=count+Math.round((Math.random()-.5)*6);if(v>=1&&v<=10)opts.add(v)}
  const ans=$('answers');ans.innerHTML='';
  [...opts].sort((a,b)=>a-b).forEach((v,i)=>{const b=document.createElement('button');b.className='ans';b.textContent=v;b.style.setProperty('--c',COLORS[i]);b.onclick=()=>answer(b,v);ans.appendChild(b)});
+ speak.preload([question,F.ok(item,count),F.bad].concat(Array.from({length:count},(_,i)=>String(i+1))));
  setTimeout(()=>speak(question),400);
 }
 function answer(b,v){if(lock)return;
  if(v===count){lock=true;b.classList.add('ok');sfx.good();confetti(80);
   document.querySelectorAll('#stars span')[round].classList.add('on');
-  speak(`Isso! ${count===1?(item.f?'Uma':'Um'):count===2?(item.f?'Duas':'Dois'):count} ${count===1?'só!':item.n+'!'}`);
+  speak(F.ok(item,count));
   round++;setTimeout(next,2000)}
- else{b.classList.add('no');sfx.bad();speak('Quase! Vamos contar juntos?')}
+ else{b.classList.add('no');sfx.bad();speak(F.bad)}
 }
 </script>
 </body>

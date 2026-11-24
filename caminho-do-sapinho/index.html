@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#47b8e8">
-<title>Caminho do Sapinho</title>
+<title data-en="Froggy Path">Caminho do Sapinho</title>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
 <style>
 :root{--ol:#2d1b4e}
@@ -68,24 +68,34 @@ main{position:fixed;inset:0;padding:84px 10px 14px;display:flex;flex-direction:c
 <main>
   <div class="title" id="lvl">Fase 1</div>
   <div id="board"></div>
-  <div class="tip">👆 Toque nas pedras para girar!</div>
+  <div class="tip" data-en="👆 Tap the stones to turn them!">👆 Toque nas pedras para girar!</div>
 </main>
-<div id="start" class="overlay show"><div class="box"><div class="big">🐸</div><h2>Caminho do Sapinho</h2><p>Gire as pedras e faça um caminho para o sapinho chegar em casa!</p><button class="play" id="go">▶ JOGAR</button></div></div>
-<div id="end" class="overlay"><div class="box"><div class="big">🏆</div><h2>Mestre dos Caminhos!</h2><p>O sapinho agradece! 💚</p><button class="play" id="again">🔄 DE NOVO</button></div></div>
+<div id="start" class="overlay show"><div class="box"><div class="big">🐸</div><h2 data-en="Froggy Path">Caminho do Sapinho</h2><p data-en="Turn the stones and make a path so the frog can get home!">Gire as pedras e faça um caminho para o sapinho chegar em casa!</p><button class="play" id="go" data-en="▶ PLAY">▶ JOGAR</button><br><button class="lang-toggle"></button></div></div>
+<div id="end" class="overlay"><div class="box"><div class="big">🏆</div><h2 data-en="Path Master!">Mestre dos Caminhos!</h2><p data-en="The frog says thank you! 💚">O sapinho agradece! 💚</p><button class="play" id="again" data-en="🔄 AGAIN">🔄 DE NOVO</button></div></div>
 
+<script src="../comum/voz.js"></script>
 <script>
 const AC=window.AudioContext||window.webkitAudioContext;let ac;
 function tone(f,d=.15,type='sine',vol=.25,delay=0,f2){try{ac=ac||new AC();if(ac.state==='suspended')ac.resume();const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
-let voice;function pickVoice(){const v=speechSynthesis.getVoices();voice=v.find(x=>/pt[-_]BR/i.test(x.lang))||v.find(x=>/^pt/i.test(x.lang))}
-if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voice)u.voice=voice;u.rate=.95;u.pitch=1.4;speechSynthesis.speak(u)}
 function confetti(n=160){const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);const W=c.width=innerWidth,H=c.height=innerHeight,x=c.getContext('2d'),cl=['#ff5d8f','#ffd23f','#3bceac','#5e60ce','#ff8c42','#4cc9f0'];const ps=Array.from({length:n},()=>({x:W/2,y:H*.4,vx:(Math.random()-.5)*18,vy:-Math.random()*15-4,s:Math.random()*9+8,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*cl.length|0]}));let f=0;(function L(){x.clearRect(0,0,W,H);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.strokeStyle='#2d1b4e';x.lineWidth=2;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.strokeRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<170)requestAnimationFrame(L);else c.remove()})()}
 const $=id=>document.getElementById(id);
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 
 /* ---------- lógica do caminho ---------- */
 const D=[[-1,0],[0,1],[1,0],[0,-1]]; // N L S O
+/*FALAS*/
 const LEVELS=[3,3,3,4,4,4,5,5];
+const F={
+ intro:L('Gire as pedras e faça um caminho para o sapinho chegar em casa!','Turn the stones and make a path so the frog can get home!'),
+ say:L('Toque nas pedras para girar e faça um caminho até a casinha!','Tap the stones to turn them, and make a path to the little house!'),
+ lvl:n=>L(`Fase ${n}!`,`Level ${n}!`),
+ hint:L('Tente girar esta pedra!','Try turning this stone!'),
+ go:L('Oba! Vamos lá!',"Yay! Let's go!"),
+ home:L('Uhuu! O sapinho chegou em casa!','Hooray! The frog made it home!'),
+ end:L('Parabéns! Você é o mestre dos caminhos!','Congratulations! You are the path master!')
+};
+function falas(){return [F.intro,F.say,F.hint,F.go,F.home,F.end].concat(LEVELS.map((_,i)=>F.lvl(i+1)))}
+/*FIM-FALAS*/
 const SVG_S='<path class="rb" d="M50 -6V106"/><path class="rd" d="M50 -6V106"/><circle class="st" cx="50" cy="26" r="5"/><circle class="st" cx="50" cy="74" r="5"/>';
 const SVG_C='<path class="rb" d="M50 -6V0A50 50 0 0 0 100 50H106"/><path class="rd" d="M50 -6V0A50 50 0 0 0 100 50H106"/><circle class="st" cx="64.6" cy="35.4" r="5"/>';
 let lvl=0,n,S,grid,path,r0,r1,lock=true;
@@ -93,7 +103,7 @@ const board=$('board');
 $('stars').innerHTML='<span>⭐</span>'.repeat(LEVELS.length);
 $('go').onclick=()=>{$('start').classList.remove('show');lvl=0;build()};
 $('again').onclick=()=>{$('end').classList.remove('show');document.querySelectorAll('#stars span').forEach(s=>s.classList.remove('on'));lvl=0;build()};
-$('say').onclick=()=>speak('Toque nas pedras para girar e faça um caminho até a casinha!');
+$('say').onclick=()=>speak(F.say);
 $('hintBtn').onclick=hint;
 
 function genPath(n){
@@ -116,9 +126,10 @@ function build(){
   if((inD+2)%4===outD){t.type='s';t.sol=inD%2===0?0:1;t.rot=t.sol+1}
   else{t.type='c';t.sol=((outD-inD+4)%4===1)?inD:outD;t.rot=t.sol+1+(Math.random()*3|0)}});
  if(trace().ok)grid[path[0][0]][path[0][1]].rot++;
- $('lvl').textContent='Fase '+(lvl+1);
+ $('lvl').textContent=L('Fase ','Level ')+(lvl+1);
  render();
- setTimeout(()=>speak(lvl===0?'Gire as pedras e faça um caminho para o sapinho chegar em casa!':'Fase '+(lvl+1)+'!'),300);
+ speak.preload([F.go,F.home,F.hint]);
+ setTimeout(()=>speak(lvl===0?F.intro:F.lvl(lvl+1)),300);
 }
 function trace(){let r=r0,c=0,enter=3;const seq=[],seen=new Set();
  while(true){const t=grid[r][c],o=ops(t);if(!o.includes(enter)||seen.has(r*n+c))break;seen.add(r*n+c);seq.push(t);
@@ -143,16 +154,16 @@ function updateLit(){const {ok,seq}=trace();grid.flat().forEach(t=>t.el.classLis
 function turn(t){if(lock)return;t.rot++;t.el.querySelector('svg').style.transform=`rotate(${t.rot*90}deg)`;tone(300+Math.random()*80,.08,'square',.12);
  const {ok,seq}=updateLit();if(seq.length)tone(500+seq.length*50,.1,'triangle',.15,.05);
  if(ok){lock=true;setTimeout(()=>hopFrog(seq),350)}}
-function hint(){if(lock)return;const t=path.map(p=>grid[p[0]][p[1]]).find(t=>!correct(t));if(!t)return;t.el.classList.remove('hint');void t.el.offsetWidth;t.el.classList.add('hint');speak('Tente girar esta pedra!');setTimeout(()=>t.el.classList.remove('hint'),2100)}
+function hint(){if(lock)return;const t=path.map(p=>grid[p[0]][p[1]]).find(t=>!correct(t));if(!t)return;t.el.classList.remove('hint');void t.el.offsetWidth;t.el.classList.add('hint');speak(F.hint);setTimeout(()=>t.el.classList.remove('hint'),2100)}
 function hopFrog(seq){
- const f=$('frog');f.classList.remove('idle');speak('Oba! Vamos lá!');
+ const f=$('frog');f.classList.remove('idle');speak(F.go);
  const pts=seq.map(t=>[(t.c+1)*S,t.r*S]).concat([[(n+1)*S,r1*S]]);let i=0;
  const step=()=>{if(i>=pts.length){arrive();return}f.classList.remove('hop');void f.offsetWidth;f.classList.add('hop');f.style.left=pts[i][0]+'px';f.style.top=pts[i][1]+'px';tone(400+i*60,.12,'sine',.25,0,700+i*60);i++;setTimeout(step,300)};
  step();
 }
-function arrive(){confetti();[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.25,i*.1));speak('Uhuu! O sapinho chegou em casa!');
+function arrive(){confetti();[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.25,i*.1));speak(F.home);
  document.querySelectorAll('#stars span')[lvl].classList.add('on');lvl++;
- setTimeout(()=>{if(lvl>=LEVELS.length){$('end').classList.add('show');speak('Parabéns! Você é o mestre dos caminhos!')}else build()},2300)}
+ setTimeout(()=>{if(lvl>=LEVELS.length){$('end').classList.add('show');speak(F.end)}else build()},2300)}
 addEventListener('resize',()=>{if(grid)render()});
 </script>
 </body>

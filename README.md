@@ -21,10 +21,24 @@ Jogos educativos para crianças de **4 a 7 anos**, feitos para jogar no celular 
 | 🚂 [Trem dos Padrões](trem-dos-padroes/) | Sequências e padrões |
 
 ## ✨ Recursos
-- Voz em português lendo as instruções (para quem ainda não lê)
+- Voz natural gravada (neural) em **português** ou **inglês**, igual em qualquer aparelho ou navegador
+- Botão 🇧🇷/🇺🇸 no menu e na tela inicial de cada jogo troca voz **e** textos (no ABC, as palavras também mudam)
 - Feito para toque: botões grandes, arrastar com o dedo
 - Sem erro punitivo — só incentivo para tentar de novo
 - Cada jogo é um único `index.html`, sem dependências
+
+## 🔊 Como as vozes funcionam
+Todas as falas ficam gravadas em `comum/voz/pt/` e `comum/voz/en/` (MP3). Cada jogo lista suas falas
+num bloco `/*FALAS*/ ... /*FIM-FALAS*/`. Depois de mudar ou criar uma fala, regrave com:
+
+```
+cd ferramentas
+npm install
+node gerar-vozes.mjs
+```
+
+O script só gera o que for novo e apaga áudios que não são mais usados.
+Se faltar algum áudio, o jogo usa a voz do aparelho, mas só se ela for do idioma escolhido.
 
 ## 📱 Dica
 No tablet, abra o site e use **"Adicionar à tela inicial"** para virar um ícone de app.
